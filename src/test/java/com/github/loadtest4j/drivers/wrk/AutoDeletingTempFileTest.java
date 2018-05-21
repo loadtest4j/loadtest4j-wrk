@@ -1,6 +1,6 @@
-package com.github.loadtest4j.loadtest4j.drivers.wrk;
+package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.junit.IntegrationTest;
+import com.github.loadtest4j.drivers.wrk.junit.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

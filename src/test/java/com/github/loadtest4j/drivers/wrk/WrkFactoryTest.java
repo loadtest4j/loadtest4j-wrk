@@ -1,9 +1,9 @@
-package com.github.loadtest4j.loadtest4j.drivers.wrk;
+package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.loadtest4j.Driver;
 import com.github.loadtest4j.loadtest4j.DriverFactory;
 import com.github.loadtest4j.loadtest4j.DriverFactoryTest;
-import com.github.loadtest4j.loadtest4j.junit.UnitTest;
+import com.github.loadtest4j.drivers.wrk.junit.UnitTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
