@@ -16,8 +16,8 @@ import org.junit.rules.ExpectedException;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +68,7 @@ public class WrkTest {
         whenHttp(httpServer).match(get("/")).then(status(HttpStatus.OK_200));
 
         // When
-        final Collection<DriverRequest> requests = Collections.singletonList(DriverRequests.get("/"));
+        final List<DriverRequest> requests = Collections.singletonList(DriverRequests.get("/"));
         final DriverResult result = driver.run(requests);
 
         // Then
@@ -86,7 +86,7 @@ public class WrkTest {
         whenHttp(httpServer).match(get("/pets")).then(status(HttpStatus.OK_200));
 
         // When
-        final Collection<DriverRequest> requests = Arrays.asList(DriverRequests.get("/"), DriverRequests.get("/pets"));
+        final List<DriverRequest> requests = Arrays.asList(DriverRequests.get("/"), DriverRequests.get("/pets"));
         final DriverResult result = driver.run(requests);
 
         // Then

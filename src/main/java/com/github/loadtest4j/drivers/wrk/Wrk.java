@@ -31,7 +31,7 @@ class Wrk implements Driver {
     }
 
     @Override
-    public DriverResult run(Collection<DriverRequest> requests) {
+    public DriverResult run(List<DriverRequest> requests) {
         validateNotEmpty(requests);
 
         final WrkLuaScript script = new WrkLuaScript(requests);
