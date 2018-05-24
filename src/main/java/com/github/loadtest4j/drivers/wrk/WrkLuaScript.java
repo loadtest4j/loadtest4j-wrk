@@ -2,13 +2,13 @@ package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.loadtest4j.DriverRequest;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.StringJoiner;
 
 class WrkLuaScript {
-    private final Collection<DriverRequest> requests;
+    private final List<DriverRequest> requests;
 
-    WrkLuaScript(Collection<DriverRequest> requests) {
+    WrkLuaScript(List<DriverRequest> requests) {
         this.requests = requests;
     }
 
