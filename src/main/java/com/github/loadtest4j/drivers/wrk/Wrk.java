@@ -65,15 +65,23 @@ class Wrk implements Driver {
     }
 
     private static DriverResult parseStdout(String stdout) {
-        final long numErrors = Regex.compile("Non-2xx or 3xx responses: (\\d+)")
+        final long ko = Regex.compile("Non-2xx or 3xx responses: (\\d+)")
                 .firstMatch(stdout)
                 .map(Long::parseLong)
                 .orElse(0L);
 
-        final long numRequests = Regex.compile("(\\d+) requests in ").firstMatch(stdout)
+        final long requests = Regex.compile("(\\d+) requests in ").firstMatch(stdout)
                 .map(Long::parseLong)
                 .orElseThrow(() -> new LoadTesterException("The output from wrk was malformatted."));
 
-        return new DriverResult(numErrors, numRequests);
+        // When wrk runs and a test completely fails, e.g. against a URL which does not exist, we see output like:
+        //
+        // 16 requests in 2.06s, 5.50KB read
+        //  Non-2xx or 3xx responses: 16
+        //
+        // This means that in wrk parlance, 'requests' = the total number of requests, not the number of OK requests
+        final long ok = requests - ko;
+
+        return new DriverResult(ok, ko);
     }
 }
