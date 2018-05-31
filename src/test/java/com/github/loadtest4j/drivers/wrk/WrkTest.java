@@ -72,8 +72,8 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertTrue(result.getRequests() >= 0);
-        assertEquals(0, result.getErrors());
+        assertTrue(result.getOk() > 0);
+        assertEquals(0, result.getKo());
     }
 
     @Test
@@ -90,8 +90,24 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertTrue(result.getRequests() >= 0);
-        assertEquals(0, result.getErrors());
+        assertTrue(result.getOk() > 0);
+        assertEquals(0, result.getKo());
+    }
+
+    @Test
+    public void testRunWithErrors()  {
+        // Given
+        final Driver driver = sut();
+        // And
+        whenHttp(httpServer).match(get("/")).then(status(HttpStatus.NOT_FOUND_404));
+
+        // When
+        final List<DriverRequest> requests = Collections.singletonList(DriverRequests.get("/"));
+        final DriverResult result = driver.run(requests);
+
+        // Then
+        assertEquals(0, result.getOk());
+        assertTrue(result.getKo() > 0);
     }
 
     @Test

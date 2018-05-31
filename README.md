@@ -25,7 +25,7 @@ Then add this library:
 <dependency>
     <groupId>com.github.loadtest4j</groupId>
     <artifactId>loadtest4j-wrk</artifactId>
-    <version>[a git tag]</version>
+    <version>[git tag]</version>
 </dependency>
 ```
 
