@@ -8,10 +8,12 @@ class WrkResult implements DriverResult {
 
     private final long ok;
     private final long ko;
+    private final String reportUrl;
 
-    WrkResult(long ok, long ko) {
+    WrkResult(long ok, long ko, String reportUrl) {
         this.ok = ok;
         this.ko = ko;
+        this.reportUrl = reportUrl;
     }
 
     @Override
@@ -26,6 +28,6 @@ class WrkResult implements DriverResult {
 
     @Override
     public Optional<String> getReportUrl() {
-        return Optional.empty();
+        return Optional.of(reportUrl);
     }
 }

@@ -75,7 +75,9 @@ public class WrkTest {
         // Then
         assertTrue(result.getOk() > 0);
         assertEquals(0, result.getKo());
-        assertEquals(Optional.empty(), result.getReportUrl());
+        final Optional<String> reportUrl = result.getReportUrl();
+        assertTrue(reportUrl.isPresent());
+        assertTrue(reportUrl.get().startsWith("file:///"));
     }
 
     @Test
