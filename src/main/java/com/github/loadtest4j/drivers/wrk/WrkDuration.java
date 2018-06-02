@@ -5,7 +5,7 @@ import java.time.Duration;
 class WrkDuration {
     private WrkDuration() {}
 
-    static Duration parse(String text) {
+    protected static Duration parse(String text) {
         if (text.startsWith("PT")) {
             return Duration.parse(text);
         } else {
