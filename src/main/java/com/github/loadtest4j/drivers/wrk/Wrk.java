@@ -22,6 +22,8 @@ import static java.lang.String.valueOf;
  */
 class Wrk implements Driver {
 
+    private static final LoadTesterException WRK_OUTPUT_MALFORMATTED_EXCEPTION = new LoadTesterException("The output from wrk was malformatted.");
+
     private final int connections;
     private final Duration duration;
     private final String executable;
@@ -61,7 +63,7 @@ class Wrk implements Driver {
 
             final String wrkReport = process.readStdout();
 
-            final URI wrkReportUri = writeReportToFile(wrkReport).toUri();
+            final URI wrkReportUri = writeReport(wrkReport);
 
             return toDriverResult(wrkReport, wrkReportUri);
         }
@@ -73,7 +75,7 @@ class Wrk implements Driver {
         }
     }
 
-    private static Path writeReportToFile(String report) {
+    private static URI writeReport(String report) {
         try {
             final File reportFile = File.createTempFile("wrk", "txt");
 
@@ -81,7 +83,7 @@ class Wrk implements Driver {
                 writer.write(report);
             }
 
-            return reportFile.toPath();
+            return reportFile.toPath().toUri();
         } catch (IOException e) {
             throw new LoadTesterException(e);
         }
@@ -93,9 +95,15 @@ class Wrk implements Driver {
                 .map(Long::parseLong)
                 .orElse(0L);
 
-        final long requests = Regex.compile("(\\d+) requests in ").firstMatch(report)
+        final long requests = Regex.compile("(\\d+) requests in ")
+                .firstMatch(report)
                 .map(Long::parseLong)
-                .orElseThrow(() -> new LoadTesterException("The output from wrk was malformatted."));
+                .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
+
+        final Duration actualDuration = Regex.compile(" requests in (.+),")
+                .firstMatch(report)
+                .map(WrkDuration::parse)
+                .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
 
         // When wrk runs and a test completely fails, e.g. against a URL which does not exist, we see output like:
         //
@@ -107,6 +115,6 @@ class Wrk implements Driver {
 
         final String reportUrl = reportUri.toString();
 
-        return new WrkResult(ok, ko, reportUrl);
+        return new WrkResult(ok, ko, actualDuration, reportUrl);
     }
 }
