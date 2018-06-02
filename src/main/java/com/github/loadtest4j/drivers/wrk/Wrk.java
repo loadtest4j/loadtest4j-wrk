@@ -5,6 +5,12 @@ import com.github.loadtest4j.loadtest4j.Driver;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import com.github.loadtest4j.loadtest4j.DriverResult;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -53,8 +59,11 @@ class Wrk implements Driver {
 
             if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
 
-            final String stdout = process.readStdout();
-            return parseStdout(stdout);
+            final String wrkReport = process.readStdout();
+
+            final URI wrkReportUri = writeReportToFile(wrkReport).toUri();
+
+            return toDriverResult(wrkReport, wrkReportUri);
         }
     }
 
@@ -64,13 +73,27 @@ class Wrk implements Driver {
         }
     }
 
-    private static DriverResult parseStdout(String stdout) {
+    private static Path writeReportToFile(String report) {
+        try {
+            final File reportFile = File.createTempFile("wrk", "txt");
+
+            try (final BufferedWriter writer = new BufferedWriter(new FileWriter(reportFile))) {
+                writer.write(report);
+            }
+
+            return reportFile.toPath();
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
+    }
+
+    private static DriverResult toDriverResult(String report, URI reportUri) {
         final long ko = Regex.compile("Non-2xx or 3xx responses: (\\d+)")
-                .firstMatch(stdout)
+                .firstMatch(report)
                 .map(Long::parseLong)
                 .orElse(0L);
 
-        final long requests = Regex.compile("(\\d+) requests in ").firstMatch(stdout)
+        final long requests = Regex.compile("(\\d+) requests in ").firstMatch(report)
                 .map(Long::parseLong)
                 .orElseThrow(() -> new LoadTesterException("The output from wrk was malformatted."));
 
@@ -82,6 +105,8 @@ class Wrk implements Driver {
         // This means that in wrk parlance, 'requests' = the total number of requests, not the number of OK requests
         final long ok = requests - ko;
 
-        return new DriverResult(ok, ko);
+        final String reportUrl = reportUri.toString();
+
+        return new WrkResult(ok, ko, reportUrl);
     }
 }
