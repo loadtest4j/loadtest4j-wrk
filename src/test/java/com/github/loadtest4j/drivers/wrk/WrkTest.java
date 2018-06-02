@@ -32,6 +32,8 @@ import static org.junit.Assert.fail;
 @Category(IntegrationTest.class)
 public class WrkTest {
 
+    private static final Duration EXPECTED_DURATION = Duration.ofSeconds(1);
+
     private StubServer httpServer;
 
     static {
@@ -58,7 +60,7 @@ public class WrkTest {
 
     private Driver sut() {
         final String executable = "wrk";
-        return new Wrk(1, Duration.ofSeconds(1), executable, 1, getServiceUrl());
+        return new Wrk(1, EXPECTED_DURATION, executable, 1, getServiceUrl());
     }
 
     @Test
@@ -75,6 +77,7 @@ public class WrkTest {
         // Then
         assertTrue(result.getOk() > 0);
         assertEquals(0, result.getKo());
+        assertTrue(result.getActualDuration().toMillis() >= EXPECTED_DURATION.toMillis());
         final Optional<String> reportUrl = result.getReportUrl();
         assertTrue(reportUrl.isPresent());
         assertTrue(reportUrl.get().startsWith("file:///"));
