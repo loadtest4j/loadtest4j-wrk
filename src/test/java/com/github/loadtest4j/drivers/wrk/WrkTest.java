@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,6 +75,7 @@ public class WrkTest {
         // Then
         assertTrue(result.getOk() > 0);
         assertEquals(0, result.getKo());
+        assertEquals(Optional.empty(), result.getReportUrl());
     }
 
     @Test

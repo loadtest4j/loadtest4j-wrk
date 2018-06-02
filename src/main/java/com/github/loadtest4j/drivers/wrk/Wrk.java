@@ -82,6 +82,6 @@ class Wrk implements Driver {
         // This means that in wrk parlance, 'requests' = the total number of requests, not the number of OK requests
         final long ok = requests - ko;
 
-        return new DriverResult(ok, ko);
+        return new WrkResult(ok, ko);
     }
 }
