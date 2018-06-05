@@ -4,7 +4,10 @@ jdk: oraclejdk8
 
 sudo: false
 
+addons:
+  apt:
+    packages:
+    - libssl-dev
+
 before_install:
-- sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-- ~/.linuxbrew/bin/brew update
-- ~/.linuxbrew/bin/brew install wrk
+- DIR=$(mktemp -d) && git clone https://github.com/wg/wrk.git $DIR && make -C $DIR && cp $DIR/wrk /usr/local/bin
