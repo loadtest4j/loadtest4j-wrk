@@ -1,8 +1,10 @@
 language: java
 
-os: osx
+jdk: oraclejdk8
 
-osx_image: xcode9.2
+sudo: false
 
 before_install:
+- sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+- brew update
 - brew install wrk
