@@ -29,8 +29,10 @@ Then add this library:
 </dependency>
 ```
 
-Then install the `wrk` command line executable, and make it available on your `$PATH`. If you have Homebrew then just do
- `brew install wrk`.
+Then install the `wrk` command line executable, and make it available on your `$PATH`:
+
+- With Homebrew: run `brew install wrk`.
+- Without Homebrew: check out the installation method in `.travis.yml`.
 
 ## Usage
 
