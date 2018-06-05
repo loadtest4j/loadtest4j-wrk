@@ -9,5 +9,14 @@ addons:
     packages:
     - libssl-dev
 
+env:
+- WRK_PATH=.wrk
+
+cache:
+  directories:
+  - .wrk
+
 before_install:
-- DIR=$(mktemp -d) && git clone https://github.com/wg/wrk.git $DIR && make -C $DIR && export PATH=$PATH:$DIR
+- test -d $WRK_PATH || git clone https://github.com/wg/wrk.git $WRK_PATH
+- test -f $WRK_PATH/wrk || make -C $WRK_PATH
+- export PATH=$PATH:$WRK_PATH
