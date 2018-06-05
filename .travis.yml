@@ -10,7 +10,7 @@ addons:
     - libssl-dev
 
 env:
-- WRK_PATH=.wrk
+- WRK_PATH=".wrk"
 
 cache:
   directories:
