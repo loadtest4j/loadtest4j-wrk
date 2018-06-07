@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +43,7 @@ class Wrk implements Driver {
 
         final WrkLuaScript script = new WrkLuaScript(requests);
 
-        try (final AutoDeletingTempFile scriptPath = AutoDeletingTempFile.create(script.toString())) {
+        try (AutoDeletingTempFile scriptPath = AutoDeletingTempFile.create(script.toString())) {
             final List<String> arguments = new ArgumentBuilder()
                     .addNamedArgument("--connections", valueOf(connections))
                     .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
@@ -79,7 +78,7 @@ class Wrk implements Driver {
         try {
             final File reportFile = File.createTempFile("wrk", "txt");
 
-            try (final BufferedWriter writer = new BufferedWriter(new FileWriter(reportFile))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(reportFile))) {
                 writer.write(report);
             }
 
