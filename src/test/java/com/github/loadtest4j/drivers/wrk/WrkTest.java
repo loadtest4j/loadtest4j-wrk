@@ -24,11 +24,8 @@ import java.util.logging.Logger;
 
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.status;
-import static com.xebialabs.restito.semantics.Condition.get;
-import static com.xebialabs.restito.semantics.Condition.parameter;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static com.xebialabs.restito.semantics.Condition.*;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class WrkTest {
