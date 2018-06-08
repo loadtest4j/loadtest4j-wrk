@@ -24,10 +24,8 @@ import java.util.logging.Logger;
 
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.status;
-import static com.xebialabs.restito.semantics.Condition.get;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static com.xebialabs.restito.semantics.Condition.*;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class WrkTest {
@@ -106,10 +104,12 @@ public class WrkTest {
         // Given
         final Driver driver = sut();
         // And
-        whenHttp(httpServer).match(get("/")).then(status(HttpStatus.NOT_FOUND_404));
+        whenHttp(httpServer).match(get("/")).then(status(HttpStatus.OK_200));
+        // And
+        whenHttp(httpServer).match(get("/"), parameter("foo", "bar")).then(status(HttpStatus.NOT_FOUND_404));
 
         // When
-        final List<DriverRequest> requests = Collections.singletonList(DriverRequests.get("/"));
+        final List<DriverRequest> requests = Collections.singletonList(DriverRequests.getWithQueryParams("/", Collections.singletonMap("foo", "bar")));
         final DriverResult result = driver.run(requests);
 
         // Then

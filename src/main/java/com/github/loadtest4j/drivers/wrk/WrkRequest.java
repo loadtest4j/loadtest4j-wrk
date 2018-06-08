@@ -2,10 +2,7 @@ package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.loadtest4j.DriverRequest;
 
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class WrkRequest {
@@ -24,7 +21,20 @@ class WrkRequest {
     }
 
     protected String getPath() {
-        return escapeSingleQuotes(request.getPath());
+        final String fullPath = request.getPath() + toQueryString(request.getQueryParams());
+
+        return escapeSingleQuotes(fullPath);
+    }
+
+    private static String toQueryString(Map<String, String> queryParams) {
+        if (queryParams.isEmpty()) {
+            return "";
+        }
+
+        return "?" + queryParams.entrySet()
+                .stream()
+                .map((entry) -> String.format("%s=%s", entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining("&"));
     }
 
     protected Map<String, String> getHeaders() {

@@ -1,8 +1,7 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.DriverRequest;
-import com.github.loadtest4j.drivers.wrk.DriverRequests;
 import com.github.loadtest4j.drivers.wrk.junit.UnitTest;
+import com.github.loadtest4j.loadtest4j.DriverRequest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
