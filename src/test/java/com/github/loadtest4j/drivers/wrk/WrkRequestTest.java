@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +32,18 @@ public class WrkRequestTest {
         final WrkRequest req = new WrkRequest(DriverRequests.get("/pets"));
 
         assertEquals("/pets", req.getPath());
+    }
+
+    @Test
+    public void testPathWithQueryString() {
+        final Map<String, String> queryParams = new LinkedHashMap<String, String>() {{
+            put("foo", "1");
+            put("bar", "2");
+        }};
+
+        final WrkRequest req = new WrkRequest(DriverRequests.getWithQueryParams("/pets", queryParams));
+
+        assertEquals("/pets?foo=1&bar=2", req.getPath());
     }
 
     @Test

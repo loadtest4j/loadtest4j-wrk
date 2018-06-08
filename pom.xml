@@ -4,7 +4,7 @@
     <artifactId>loadtest4j-wrk</artifactId>
     <version>0.5.0</version>
 
-    <description>The wrk driver for loadtest4j.</description>
+    <description>Wrk driver for loadtest4j.</description>
 
     <licenses>
         <license>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.github.loadtest4j</groupId>
             <artifactId>loadtest4j</artifactId>
-            <version>0.9.0</version>
+            <version>0.10.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -55,6 +55,7 @@
                     <printFailingErrors>true</printFailingErrors>
                     <linkXRef>false</linkXRef>
                     <analysisCache>true</analysisCache>
+                    <includeTests>true</includeTests>
                 </configuration>
                 <executions>
                     <execution>
