@@ -104,16 +104,14 @@ public class WrkTest {
         // Given
         final Driver driver = sut();
         // And
-        whenHttp(httpServer)
-                .match(post("/pets"), withPostBodyContaining("{\"three\": \"bott\\les\"}"))
-                .then(status(HttpStatus.OK_200));
+        final String body = "{" + "\n"
+                + "\"three\": \"bott\\les\"" + "\n"
+                + "}";
+        // And
+        whenHttp(httpServer).match(post("/pets"), withPostBodyContaining(body)).then(status(HttpStatus.OK_200));
 
         // When
-        final DriverRequest edgeCaseReq = new DriverRequest("{\"three\": \"bott\\les\"}",
-                Collections.emptyMap(),
-                "POST",
-                "/pets",
-                Collections.emptyMap());
+        final DriverRequest edgeCaseReq = new DriverRequest(body, Collections.emptyMap(),"POST","/pets", Collections.emptyMap());
         final List<DriverRequest> requests = Collections.singletonList(edgeCaseReq);
         final DriverResult result = driver.run(requests);
 
