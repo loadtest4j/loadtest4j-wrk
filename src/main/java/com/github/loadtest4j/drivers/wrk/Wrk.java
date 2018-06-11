@@ -58,9 +58,9 @@ class Wrk implements Driver {
 
             final int exitStatus = process.run();
 
-            if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
-
             final String wrkReport = process.readStdout();
+
+            if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
 
             final URI wrkReportUri = writeReport(wrkReport);
 

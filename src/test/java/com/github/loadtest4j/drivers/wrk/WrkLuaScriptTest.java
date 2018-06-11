@@ -37,8 +37,8 @@ public class WrkLuaScriptTest {
 
         assertEquals(m( "init = function(args)",
                 "  local r = {}",
-                "  r[1] = wrk.format('GET', '/pets', {}, '')",
-                "  r[2] = wrk.format('GET', '/pets', {['Accept'] = 'application/json'}, '{}')",
+                "  r[1] = wrk.format([[GET]], [[/pets]], {}, [[]])",
+                "  r[2] = wrk.format([[GET]], [[/pets]], {['Accept'] = 'application/json'}, [[{}]])",
                 "  req = table.concat(r)",
                 "end",
                 "",

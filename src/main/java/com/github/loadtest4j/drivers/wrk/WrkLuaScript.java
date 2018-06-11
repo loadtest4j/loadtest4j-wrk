@@ -3,6 +3,7 @@ package com.github.loadtest4j.drivers.wrk;
 import com.github.loadtest4j.loadtest4j.DriverRequest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 class WrkLuaScript {
@@ -34,7 +35,33 @@ class WrkLuaScript {
     }
 
     private static String wrkRequest(DriverRequest request) {
-        final WrkRequest req = new WrkRequest(request);
-        return String.format("wrk.format('%s', '%s', %s, '%s')", req.getMethod(), req.getPath(), req.getHeaders(), req.getBody());
+        final String body = getBody(request);
+        final Map<String, String> headers = getHeaders(request);
+        final String method = getMethod(request);
+        final String path = getPath(request);
+
+        return String.format("wrk.format(%s, %s, %s, %s)", method, path, headers, body);
+    }
+
+    private static String getMethod(DriverRequest request) {
+        return new LuaMultiLineString(request.getMethod()).toString();
+    }
+
+    private static String getBody(DriverRequest request) {
+        return new LuaMultiLineString(request.getBody()).toString();
+    }
+
+    private static String getPath(DriverRequest request) {
+        final String fullPath = request.getPath() + getQueryString(request.getQueryParams());
+
+        return new LuaMultiLineString(fullPath).toString();
+    }
+
+    private static String getQueryString(Map<String, String> queryParams) {
+        return new QueryString(queryParams).toString();
+    }
+
+    private static Map<String, String> getHeaders(DriverRequest request) {
+        return new LuaMap(request.getHeaders());
     }
 }
