@@ -4,7 +4,6 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 class LuaMap extends AbstractMap<String, String> {
     private final Map<String, String> map;

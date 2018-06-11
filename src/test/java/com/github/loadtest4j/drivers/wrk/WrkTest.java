@@ -100,6 +100,29 @@ public class WrkTest {
     }
 
     @Test
+    public void testRunWithJsonPost() {
+        // Given
+        final Driver driver = sut();
+        // And
+        whenHttp(httpServer)
+                .match(post("/pets"), withPostBodyContaining("{\"three\": \"bott\\les\"}"))
+                .then(status(HttpStatus.OK_200));
+
+        // When
+        final DriverRequest edgeCaseReq = new DriverRequest("{\"three\": \"bott\\les\"}",
+                Collections.emptyMap(),
+                "POST",
+                "/pets",
+                Collections.emptyMap());
+        final List<DriverRequest> requests = Collections.singletonList(edgeCaseReq);
+        final DriverResult result = driver.run(requests);
+
+        // Then
+        assertTrue(result.getOk() > 0);
+        assertEquals(0, result.getKo());
+    }
+
+    @Test
     public void testRunWithEdgeCaseRequest() {
         // Given
         final Driver driver = sut();
