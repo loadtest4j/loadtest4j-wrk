@@ -6,6 +6,10 @@ import java.util.Collections;
 import java.util.Map;
 
 public class DriverRequests {
+    public static DriverRequest method(String method, String path) {
+        return new DriverRequest("", Collections.emptyMap(), method, path, Collections.emptyMap());
+    }
+
     public static DriverRequest get(String path) {
         return new DriverRequest("", Collections.emptyMap(), "GET", path, Collections.emptyMap());
     }
