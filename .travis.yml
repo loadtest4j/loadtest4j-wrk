@@ -20,3 +20,8 @@ before_install:
 - test -d $WRK_PATH/.git || git clone https://github.com/wg/wrk.git $WRK_PATH
 - test -f $WRK_PATH/wrk || make -C $WRK_PATH
 - export PATH=$PATH:$WRK_PATH
+
+script: mvn verify -B
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
