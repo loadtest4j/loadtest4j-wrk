@@ -3,7 +3,7 @@
     <groupId>com.github.loadtest4j</groupId>
     <artifactId>loadtest4j-wrk</artifactId>
     <version>0.6.1</version>
-
+    <url>https://github.com/loadtest4j/loadtest4j-wrk</url>
     <description>Wrk driver for loadtest4j.</description>
 
     <licenses>

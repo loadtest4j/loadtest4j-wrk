@@ -1,6 +1,7 @@
 # loadtest4j-wrk
 
 [![Build Status](https://travis-ci.com/loadtest4j/loadtest4j-wrk.svg?branch=master)](https://travis-ci.com/loadtest4j/loadtest4j-wrk)
+[![Codecov](https://codecov.io/gh/loadtest4j/loadtest4j-wrk/branch/master/graph/badge.svg)](https://codecov.io/gh/loadtest4j/loadtest4j-wrk)
 [![JitPack Release](https://jitpack.io/v/com.github.loadtest4j/loadtest4j-wrk.svg)](https://jitpack.io/#com.github.loadtest4j/loadtest4j-wrk)
 
 The `wrk` driver for loadtest4j.
