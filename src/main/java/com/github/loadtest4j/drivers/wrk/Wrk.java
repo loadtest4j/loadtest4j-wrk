@@ -13,6 +13,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.valueOf;
 
@@ -21,6 +22,14 @@ import static java.lang.String.valueOf;
  */
 class Wrk implements Driver {
 
+    private static final String ACTUAL_DURATION = "actualDuration";
+    private static final String KO = "ko";
+    private static final String MAX = "max";
+    private static final String P50 = "p50";
+    private static final String P75 = "p75";
+    private static final String P90 = "p90";
+    private static final String P99 = "p99";
+    private static final String REQUESTS = "requests";
     private static final LoadTesterException WRK_OUTPUT_MALFORMATTED_EXCEPTION = new LoadTesterException("The output from wrk was malformatted.");
 
     private final int connections;
@@ -49,6 +58,7 @@ class Wrk implements Driver {
                     .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
                     .addNamedArgument("--script", scriptPath.getAbsolutePath())
                     .addNamedArgument("--threads", valueOf(threads))
+                    .addArgument("--latency")
                     .addArgument(url)
                     .build();
 
@@ -89,20 +99,49 @@ class Wrk implements Driver {
     }
 
     private static DriverResult toDriverResult(String report, URI reportUri) {
-        final long ko = Regex.compile("Non-2xx or 3xx responses: (\\d+)")
-                .firstMatch(report)
-                .map(Long::parseLong)
-                .orElse(0L);
+        final String reg = lines(
+                indent() + tabbed("Thread Stats", "Avg", "Stdev", "Max", "\\+\\/- Stdev"),
+                indent() + tabbed("Latency", skip(), skip(), capture(MAX, duration()), skip()),
+                skipLine(),
+                indent() + "Latency Distribution",
+                // FIXME wrk2 has decimals here
+                indent() + tabbed("50%", capture(P50, duration())),
+                indent() + tabbed("75%", capture(P75, duration())),
+                indent() + tabbed("90%", capture(P90, duration())),
+                indent() + tabbed("99%", capture(P99, duration())),
+                indent() + capture(REQUESTS, integer()) + " requests in " + capture(ACTUAL_DURATION, duration()) + "," + skipLine());
 
-        final long requests = Regex.compile("(\\d+) requests in ")
-                .firstMatch(report)
+        final Regex r = Regex.compile(reg);
+        final Regex.Matcher matcher = r.match(report);
+
+        final Optional<Duration> p50 = matcher.group(P50)
+                .map(WrkDuration::parse);
+
+        final Optional<Duration> p75 = matcher.group(P75)
+                .map(WrkDuration::parse);
+
+        final Optional<Duration> p90 = matcher.group(P90)
+                .map(WrkDuration::parse);
+
+        final Optional<Duration> p99 = matcher.group(P99)
+                .map(WrkDuration::parse);
+
+        final Optional<Duration> max = matcher.group(MAX)
+                .map(WrkDuration::parse);
+
+        final long requests = matcher.group(REQUESTS)
                 .map(Long::parseLong)
                 .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
 
-        final Duration actualDuration = Regex.compile(" requests in (.+),")
-                .firstMatch(report)
+        final Duration actualDuration = matcher.group(ACTUAL_DURATION)
                 .map(WrkDuration::parse)
                 .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
+
+        final Regex failure = Regex.compile("Non-2xx or 3xx responses: " + capture(KO, integer()));
+        final Regex.Matcher failureMatcher = failure.match(report);
+        final long ko = failureMatcher.group(KO)
+                .map(Long::parseLong)
+                .orElse(0L);
 
         // When wrk runs and a test completely fails, e.g. against a URL which does not exist, we see output like:
         //
@@ -115,5 +154,37 @@ class Wrk implements Driver {
         final String reportUrl = reportUri.toString();
 
         return new WrkResult(ok, ko, actualDuration, reportUrl);
+    }
+
+    private static String tabbed(String... parts) {
+        return String.join("\\s+", parts);
+    }
+
+    private static String indent() {
+        return "\\s+";
+    }
+
+    private static String skip() {
+        return "[\\w.%]+";
+    }
+
+    private static String skipLine() {
+        return ".+";
+    }
+
+    private static String capture(String name, String pattern) {
+        return "(?<" + name + ">" + pattern + ")";
+    }
+
+    private static String duration() {
+        return ".\\S+";
+    }
+
+    private static String integer() {
+        return "\\d+";
+    }
+
+    private static String lines(String... lines) {
+        return String.join("\\n", lines);
     }
 }
