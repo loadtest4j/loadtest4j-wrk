@@ -1,18 +1,18 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.DriverRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.loadtest4j.drivers.wrk.output.Errors;
+import com.github.loadtest4j.drivers.wrk.output.Output;
+import com.github.loadtest4j.drivers.wrk.output.Summary;
 import com.github.loadtest4j.loadtest4j.Driver;
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
+import com.github.loadtest4j.loadtest4j.DriverRequest;
 import com.github.loadtest4j.loadtest4j.DriverResult;
+import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -23,8 +23,6 @@ import static java.lang.String.valueOf;
  * Runs a load test using the 'wrk' program by Will Glozer (https://github.com/wg/wrk).
  */
 class Wrk implements Driver {
-
-    private static final LoadTesterException WRK_OUTPUT_MALFORMATTED_EXCEPTION = new LoadTesterException("The output from wrk was malformatted.");
 
     private final int connections;
     private final Duration duration;
@@ -44,15 +42,15 @@ class Wrk implements Driver {
     public DriverResult run(List<DriverRequest> requests) {
         validateNotEmpty(requests);
 
-        final WrkLuaScript script = new WrkLuaScript(requests);
-
-        try (AutoDeletingTempFile scriptPath = AutoDeletingTempFile.create(script.toString())) {
+        try (AutoDeletingTempFile script = WrkLuaScript.create();
+             AutoDeletingTempFile input = WrkLuaInput.create(requests)) {
             final List<String> arguments = new ArgumentBuilder()
                     .addNamedArgument("--connections", valueOf(connections))
                     .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
-                    .addNamedArgument("--script", scriptPath.getAbsolutePath())
+                    .addNamedArgument("--script", script.getAbsolutePath())
                     .addNamedArgument("--threads", valueOf(threads))
                     .addArgument(url)
+                    .addArgument(input.getAbsolutePath())
                     .build();
 
             final Command command = new Command(arguments, executable);
@@ -61,13 +59,15 @@ class Wrk implements Driver {
 
             final int exitStatus = process.run();
 
-            final String wrkReport = process.readStdout();
+            final InputStream wrkReport = process.getStdout();
+            final InputStream jsonReport = process.getStderr();
+            final Output output = parse(jsonReport);
 
             if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
 
             final URI wrkReportUri = writeReport(wrkReport);
 
-            return toDriverResult(wrkReport, wrkReportUri);
+            return toDriverResult(output, wrkReportUri);
         }
     }
 
@@ -77,13 +77,11 @@ class Wrk implements Driver {
         }
     }
 
-    private static URI writeReport(String report) {
+    private static URI writeReport(InputStream report) {
         try {
             final File reportFile = File.createTempFile("wrk", "txt");
 
-            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(reportFile), StandardCharsets.UTF_8))) {
-                writer.write(report);
-            }
+            Files.copy(report, reportFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             return reportFile.toPath().toUri();
         } catch (IOException e) {
@@ -91,21 +89,24 @@ class Wrk implements Driver {
         }
     }
 
-    private static DriverResult toDriverResult(String report, URI reportUri) {
-        final long ko = Regex.compile("Non-2xx or 3xx responses: (\\d+)")
-                .firstMatch(report)
-                .map(Long::parseLong)
-                .orElse(0L);
+    private static Output parse(InputStream json) {
+        try {
+            return new ObjectMapper().readValue(json, Output.class);
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
+    }
 
-        final long requests = Regex.compile("(\\d+) requests in ")
-                .firstMatch(report)
-                .map(Long::parseLong)
-                .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
+    private static DriverResult toDriverResult(Output output, URI reportUri) {
+        final Summary summary = output.getSummary();
 
-        final Duration actualDuration = Regex.compile(" requests in (.+),")
-                .firstMatch(report)
-                .map(WrkDuration::parse)
-                .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
+        final Errors errors = summary.getErrors();
+
+        final long ko = errors.getConnect() + errors.getRead() + errors.getStatus() + errors.getTimeout() + errors.getWrite();
+
+        final long requests = summary.getRequests();
+
+        final Duration actualDuration = Duration.ofNanos(summary.getDuration() * 1000);
 
         // When wrk runs and a test completely fails, e.g. against a URL which does not exist, we see output like:
         //
