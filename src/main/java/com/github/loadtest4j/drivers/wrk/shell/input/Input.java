@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.input;
+package com.github.loadtest4j.drivers.wrk.shell.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,5 +10,9 @@ public class Input {
 
     public Input(List<Req> requests) {
         this.requests = requests;
+    }
+
+    public List<Req> getRequests() {
+        return requests;
     }
 }

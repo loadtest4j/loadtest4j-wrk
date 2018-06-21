@@ -1,23 +1,23 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.loadtest4j.drivers.wrk.output.Errors;
-import com.github.loadtest4j.drivers.wrk.output.Output;
-import com.github.loadtest4j.drivers.wrk.output.Summary;
+import com.github.loadtest4j.drivers.wrk.shell.input.Input;
+import com.github.loadtest4j.drivers.wrk.shell.input.Req;
+import com.github.loadtest4j.drivers.wrk.shell.output.Errors;
+import com.github.loadtest4j.drivers.wrk.shell.output.Output;
+import com.github.loadtest4j.drivers.wrk.shell.output.Summary;
+import com.github.loadtest4j.drivers.wrk.report.LocalWrkReport;
+import com.github.loadtest4j.drivers.wrk.shell.*;
 import com.github.loadtest4j.loadtest4j.Driver;
 import com.github.loadtest4j.loadtest4j.DriverRequest;
 import com.github.loadtest4j.loadtest4j.DriverResult;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
-import java.io.*;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
-
-import static java.lang.String.valueOf;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Runs a load test using the 'wrk' program by Will Glozer (https://github.com/wg/wrk).
@@ -42,33 +42,15 @@ class Wrk implements Driver {
     public DriverResult run(List<DriverRequest> requests) {
         validateNotEmpty(requests);
 
-        try (AutoDeletingTempFile script = WrkLuaScript.create();
-             AutoDeletingTempFile input = WrkLuaInput.create(requests)) {
-            final List<String> arguments = new ArgumentBuilder()
-                    .addNamedArgument("--connections", valueOf(connections))
-                    .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
-                    .addNamedArgument("--script", script.getAbsolutePath())
-                    .addNamedArgument("--threads", valueOf(threads))
-                    .addArgument(url)
-                    .addArgument(input.getAbsolutePath())
-                    .build();
+        final ShellWrk shellWrk = new ShellWrk(connections, duration, executable, threads, url);
 
-            final Command command = new Command(arguments, executable);
+        final Input input = input(requests);
 
-            final Process process = new Shell().start(command);
+        final Output output = shellWrk.run(input);
 
-            final int exitStatus = process.run();
+        final URI wrkReportUri = writeOutput(output);
 
-            final InputStream wrkReport = process.getStdout();
-            final InputStream jsonReport = process.getStderr();
-            final Output output = parse(jsonReport);
-
-            if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
-
-            final URI wrkReportUri = writeReport(wrkReport);
-
-            return toDriverResult(output, wrkReportUri);
-        }
+        return toDriverResult(output, wrkReportUri);
     }
 
     private static <T> void validateNotEmpty(Collection<T> requests) {
@@ -77,24 +59,35 @@ class Wrk implements Driver {
         }
     }
 
-    private static URI writeReport(InputStream report) {
-        try {
-            final File reportFile = File.createTempFile("wrk", "txt");
-
-            Files.copy(report, reportFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            return reportFile.toPath().toUri();
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
+    private static Input input(List<DriverRequest> requests) {
+        return new Input(wrkRequests(requests));
     }
 
-    private static Output parse(InputStream json) {
-        try {
-            return new ObjectMapper().readValue(json, Output.class);
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
+    private static List<Req> wrkRequests(List<DriverRequest> requests) {
+        return requests.stream()
+                .map(Wrk::wrkRequest)
+                .collect(Collectors.toList());
+    }
+
+    private static Req wrkRequest(DriverRequest request) {
+        final String body = request.getBody();
+        final Map<String, String> headers = request.getHeaders();
+        final String method = request.getMethod();
+        final String path = getPath(request);
+
+        return new Req(body, headers, method, path);
+    }
+
+    private static String getPath(DriverRequest request) {
+        return request.getPath() + getQueryString(request.getQueryParams());
+    }
+
+    private static String getQueryString(Map<String, String> queryParams) {
+        return new QueryString(queryParams).toString();
+    }
+
+    private static URI writeOutput(Output output) {
+        return new LocalWrkReport().save(output);
     }
 
     private static DriverResult toDriverResult(Output output, URI reportUri) {

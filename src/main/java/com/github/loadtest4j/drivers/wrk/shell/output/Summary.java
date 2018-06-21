@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.output;
+package com.github.loadtest4j.drivers.wrk.shell.output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,6 +14,10 @@ public class Summary {
 
     @JsonProperty
     private long requests;
+
+    public long getBytes() {
+        return bytes;
+    }
 
     public long getDuration() {
         return duration;

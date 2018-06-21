@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk;
+package com.github.loadtest4j.drivers.wrk.shell;
 
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
@@ -14,10 +14,6 @@ class Process {
 
     protected InputStream getStderr() {
         return process.getErrorStream();
-    }
-
-    protected InputStream getStdout() {
-        return process.getInputStream();
     }
 
     protected Integer run() {

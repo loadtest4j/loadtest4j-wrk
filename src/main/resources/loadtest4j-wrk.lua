@@ -1,15 +1,10 @@
 init = function(args)
     local requestsFile = args[1]
-
     local requestsStr = readFile(requestsFile)
-
     local parsedRequests = parseJson(requestsStr)
-
-    print(dump(parsedRequests))
 
     local r = {}
     for _, req in pairs(parsedRequests.requests) do
-        print("Found request")
         local body = req.body
         local headers = req.headers
         local method = req.method
@@ -42,6 +37,7 @@ done = function(summary, latency, requests)
         "requests": "%d"
     },
     "latency": {
+        "mean": "%d",
         "percentiles": {
             "0": "%d",
             "50": "%d",
@@ -64,6 +60,7 @@ done = function(summary, latency, requests)
     summary.errors.timeout,
     summary.errors.write,
     summary.requests,
+    latency.mean,
     latency.min,
     latency:percentile(50),
     latency:percentile(75),
@@ -84,7 +81,6 @@ function readFile(file)
     return content
 end
 
--- Read JSON from string
 function parseJson(json)
     -- From http://lua.2524044.n2.nabble.com/Smallest-Lua-only-single-file-JSON-parser-tp6934333p6939904.html
     local str = {}
@@ -98,17 +94,4 @@ function parseJson(json)
         return ("%q"):format(str[tonumber(s)])
     end)
     return assert(loadstring("return "..json))()
-end
-
-function dump(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k,v in pairs(o) do
-            if type(k) ~= 'number' then k = '"'..k..'"' end
-            s = s .. '['..k..'] = ' .. dump(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
 end

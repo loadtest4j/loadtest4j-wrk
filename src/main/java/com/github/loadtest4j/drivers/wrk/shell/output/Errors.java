@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.output;
+package com.github.loadtest4j.drivers.wrk.shell.output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
