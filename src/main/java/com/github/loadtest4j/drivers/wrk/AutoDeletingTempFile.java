@@ -4,8 +4,11 @@ import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -45,8 +48,8 @@ class AutoDeletingTempFile implements AutoCloseable {
     }
 
     private static void writeStringToFile(File file, String contents) throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write(contents);
+        try (Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            w.write(contents);
         }
     }
 }
