@@ -29,10 +29,10 @@ public class WrkFactory implements DriverFactory {
      */
     @Override
     public Driver create(Map<String, String> properties) {
-        final Duration duration = Duration.ofSeconds(Long.valueOf(properties.get("duration")));
-        final int connections = Integer.valueOf(properties.getOrDefault("connections", "1"));
+        final Duration duration = Duration.ofSeconds(Long.parseLong(properties.get("duration")));
+        final int connections = Integer.parseInt(properties.getOrDefault("connections", "1"));
         final String executable = properties.getOrDefault("executable", "wrk");
-        final int threads = Integer.valueOf(properties.getOrDefault("threads", "1"));
+        final int threads = Integer.parseInt(properties.getOrDefault("threads", "1"));
         final String url = properties.get("url");
 
         return new Wrk(connections, duration, executable, threads, url);

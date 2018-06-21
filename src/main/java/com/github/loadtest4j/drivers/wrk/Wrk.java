@@ -7,9 +7,12 @@ import com.github.loadtest4j.loadtest4j.DriverResult;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +81,7 @@ class Wrk implements Driver {
         try {
             final File reportFile = File.createTempFile("wrk", "txt");
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(reportFile))) {
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(reportFile), StandardCharsets.UTF_8))) {
                 writer.write(report);
             }
 
