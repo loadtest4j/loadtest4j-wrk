@@ -1,30 +1,28 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.DriverRequest;
-import com.github.loadtest4j.loadtest4j.Driver;
+import com.github.loadtest4j.drivers.wrk.shell.input.Input;
+import com.github.loadtest4j.drivers.wrk.shell.input.Req;
+import com.github.loadtest4j.drivers.wrk.shell.output.Errors;
+import com.github.loadtest4j.drivers.wrk.shell.output.Output;
+import com.github.loadtest4j.drivers.wrk.shell.output.Summary;
+import com.github.loadtest4j.drivers.wrk.shell.*;
+import com.github.loadtest4j.loadtest4j.ResponseTime;
+import com.github.loadtest4j.loadtest4j.driver.Driver;
+import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
+import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
-import com.github.loadtest4j.loadtest4j.DriverResult;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
-
-import static java.lang.String.valueOf;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Runs a load test using the 'wrk' program by Will Glozer (https://github.com/wg/wrk).
  */
 class Wrk implements Driver {
-
-    private static final LoadTesterException WRK_OUTPUT_MALFORMATTED_EXCEPTION = new LoadTesterException("The output from wrk was malformatted.");
 
     private final int connections;
     private final Duration duration;
@@ -44,31 +42,15 @@ class Wrk implements Driver {
     public DriverResult run(List<DriverRequest> requests) {
         validateNotEmpty(requests);
 
-        final WrkLuaScript script = new WrkLuaScript(requests);
+        final ShellWrk shellWrk = new ShellWrk(connections, duration, executable, threads, url);
 
-        try (AutoDeletingTempFile scriptPath = AutoDeletingTempFile.create(script.toString())) {
-            final List<String> arguments = new ArgumentBuilder()
-                    .addNamedArgument("--connections", valueOf(connections))
-                    .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
-                    .addNamedArgument("--script", scriptPath.getAbsolutePath())
-                    .addNamedArgument("--threads", valueOf(threads))
-                    .addArgument(url)
-                    .build();
+        final Input input = input(requests);
 
-            final Command command = new Command(arguments, executable);
+        final Output output = shellWrk.run(input);
 
-            final Process process = new Shell().start(command);
+        final URI wrkReportUri = writeOutput(output);
 
-            final int exitStatus = process.run();
-
-            final String wrkReport = process.readStdout();
-
-            if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
-
-            final URI wrkReportUri = writeReport(wrkReport);
-
-            return toDriverResult(wrkReport, wrkReportUri);
-        }
+        return toDriverResult(output, wrkReportUri);
     }
 
     private static <T> void validateNotEmpty(Collection<T> requests) {
@@ -77,35 +59,47 @@ class Wrk implements Driver {
         }
     }
 
-    private static URI writeReport(String report) {
-        try {
-            final File reportFile = File.createTempFile("wrk", "txt");
-
-            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(reportFile), StandardCharsets.UTF_8))) {
-                writer.write(report);
-            }
-
-            return reportFile.toPath().toUri();
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
+    private static Input input(List<DriverRequest> requests) {
+        return new Input(wrkRequests(requests));
     }
 
-    private static DriverResult toDriverResult(String report, URI reportUri) {
-        final long ko = Regex.compile("Non-2xx or 3xx responses: (\\d+)")
-                .firstMatch(report)
-                .map(Long::parseLong)
-                .orElse(0L);
+    private static List<Req> wrkRequests(List<DriverRequest> requests) {
+        return requests.stream()
+                .map(Wrk::wrkRequest)
+                .collect(Collectors.toList());
+    }
 
-        final long requests = Regex.compile("(\\d+) requests in ")
-                .firstMatch(report)
-                .map(Long::parseLong)
-                .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
+    private static Req wrkRequest(DriverRequest request) {
+        final String body = request.getBody();
+        final Map<String, String> headers = request.getHeaders();
+        final String method = request.getMethod();
+        final String path = getPath(request);
 
-        final Duration actualDuration = Regex.compile(" requests in (.+),")
-                .firstMatch(report)
-                .map(WrkDuration::parse)
-                .orElseThrow(() -> WRK_OUTPUT_MALFORMATTED_EXCEPTION);
+        return new Req(body, headers, method, path);
+    }
+
+    private static String getPath(DriverRequest request) {
+        return request.getPath() + getQueryString(request.getQueryParams());
+    }
+
+    private static String getQueryString(Map<String, String> queryParams) {
+        return new QueryString(queryParams).toString();
+    }
+
+    private static URI writeOutput(Output output) {
+        return new WrkReport().save(output);
+    }
+
+    private static DriverResult toDriverResult(Output output, URI reportUri) {
+        final Summary summary = output.getSummary();
+
+        final Errors errors = summary.getErrors();
+
+        final long ko = errors.getConnect() + errors.getRead() + errors.getStatus() + errors.getTimeout() + errors.getWrite();
+
+        final long requests = summary.getRequests();
+
+        final Duration actualDuration = Duration.ofNanos(summary.getDuration() * 1000);
 
         // When wrk runs and a test completely fails, e.g. against a URL which does not exist, we see output like:
         //
@@ -115,8 +109,10 @@ class Wrk implements Driver {
         // This means that in wrk parlance, 'requests' = the total number of requests, not the number of OK requests
         final long ok = requests - ko;
 
+        final ResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
+
         final String reportUrl = reportUri.toString();
 
-        return new WrkResult(ok, ko, actualDuration, reportUrl);
+        return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl);
     }
 }

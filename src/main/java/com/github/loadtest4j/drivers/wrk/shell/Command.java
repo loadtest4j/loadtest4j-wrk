@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk;
+package com.github.loadtest4j.drivers.wrk.shell;
 
 import java.util.Collections;
 import java.util.List;

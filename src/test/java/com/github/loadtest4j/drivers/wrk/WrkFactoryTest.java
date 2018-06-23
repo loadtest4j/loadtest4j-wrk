@@ -1,7 +1,7 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.Driver;
-import com.github.loadtest4j.loadtest4j.DriverFactory;
+import com.github.loadtest4j.loadtest4j.driver.Driver;
+import com.github.loadtest4j.loadtest4j.driver.DriverFactory;
 import com.github.loadtest4j.drivers.wrk.junit.UnitTest;
 import org.junit.Rule;
 import org.junit.Test;
