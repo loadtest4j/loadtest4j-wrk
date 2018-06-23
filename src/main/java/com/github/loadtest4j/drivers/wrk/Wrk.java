@@ -5,11 +5,11 @@ import com.github.loadtest4j.drivers.wrk.shell.input.Req;
 import com.github.loadtest4j.drivers.wrk.shell.output.Errors;
 import com.github.loadtest4j.drivers.wrk.shell.output.Output;
 import com.github.loadtest4j.drivers.wrk.shell.output.Summary;
-import com.github.loadtest4j.drivers.wrk.report.LocalWrkReport;
 import com.github.loadtest4j.drivers.wrk.shell.*;
-import com.github.loadtest4j.loadtest4j.Driver;
-import com.github.loadtest4j.loadtest4j.DriverRequest;
-import com.github.loadtest4j.loadtest4j.DriverResult;
+import com.github.loadtest4j.loadtest4j.ResponseTime;
+import com.github.loadtest4j.loadtest4j.driver.Driver;
+import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
+import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
 import java.net.URI;
@@ -87,7 +87,7 @@ class Wrk implements Driver {
     }
 
     private static URI writeOutput(Output output) {
-        return new LocalWrkReport().save(output);
+        return new WrkReport().save(output);
     }
 
     private static DriverResult toDriverResult(Output output, URI reportUri) {
@@ -109,8 +109,10 @@ class Wrk implements Driver {
         // This means that in wrk parlance, 'requests' = the total number of requests, not the number of OK requests
         final long ok = requests - ko;
 
+        final ResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
+
         final String reportUrl = reportUri.toString();
 
-        return new WrkResult(ok, ko, actualDuration, reportUrl);
+        return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl);
     }
 }

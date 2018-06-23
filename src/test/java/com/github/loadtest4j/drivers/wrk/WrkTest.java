@@ -1,9 +1,9 @@
 package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.drivers.wrk.junit.IntegrationTest;
-import com.github.loadtest4j.loadtest4j.Driver;
-import com.github.loadtest4j.loadtest4j.DriverRequest;
-import com.github.loadtest4j.loadtest4j.DriverResult;
+import com.github.loadtest4j.loadtest4j.driver.Driver;
+import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
+import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
@@ -76,6 +76,7 @@ public class WrkTest {
         assertTrue(result.getOk() > 0);
         assertEquals(0, result.getKo());
         assertTrue(result.getActualDuration().toMillis() >= EXPECTED_DURATION.toMillis());
+        assertTrue(result.getResponseTime().getPercentile(100).toMillis() > 0);
         final Optional<String> reportUrl = result.getReportUrl();
         assertTrue(reportUrl.isPresent());
         assertTrue(reportUrl.get().startsWith("file:///"));

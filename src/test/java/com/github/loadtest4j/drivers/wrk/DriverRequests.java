@@ -1,6 +1,6 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.DriverRequest;
+import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
 
 import java.util.Collections;
 import java.util.Map;

@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-class Latency {
+public class Latency {
     @JsonProperty
     private long mean;
 
     @JsonProperty
-    private Map<String, Long> percentiles;
+    private Map<Integer, Long> percentiles;
 
     @JsonProperty
     private long stdev;
@@ -18,7 +18,7 @@ class Latency {
         return mean;
     }
 
-    public Map<String, Long> getPercentiles() {
+    public Map<Integer, Long> getPercentiles() {
         return percentiles;
     }
 
