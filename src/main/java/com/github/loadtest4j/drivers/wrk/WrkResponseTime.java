@@ -15,7 +15,7 @@ class WrkResponseTime implements ResponseTime {
 
     @Override
     public Duration getPercentile(int i) {
-        if ((i < 0) || (i > 100)) {
+        if (i < 0 || i > 100) {
             throw new IllegalArgumentException("A percentile must be between 0 and 100");
         }
 
