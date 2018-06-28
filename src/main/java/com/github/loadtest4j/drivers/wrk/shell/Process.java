@@ -16,7 +16,7 @@ class Process {
         return process.getErrorStream();
     }
 
-    protected Integer run() {
+    protected Integer waitFor() {
         try {
             return process.waitFor();
         } catch (InterruptedException e) {

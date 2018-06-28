@@ -11,11 +11,11 @@ import static org.junit.Assert.assertEquals;
 @Category(IntegrationTest.class)
 public class ShellTest {
     @Test
-    public void testRun() {
+    public void testWaitFor() {
         final Shell sut = new Shell();
 
         final Command command = new Command(Collections.emptyList(), "whoami");
-        final int exitStatus = sut.start(command).run();
+        final int exitStatus = sut.start(command).waitFor();
 
         assertEquals(0, exitStatus);
     }

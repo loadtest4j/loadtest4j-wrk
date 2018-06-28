@@ -163,6 +163,21 @@ public class WrkTest {
     }
 
     @Test
+    public void testRunWithBrokenDriver() {
+        // Given
+        final Driver driver = new Wrk(1, EXPECTED_DURATION, "wrk", 1, "http://localhost:1");
+
+        // Expect
+        thrown.expect(LoadTesterException.class);
+        thrown.expectMessage("Wrk error");
+
+        // When
+        final List<DriverRequest> requests = Collections.singletonList(DriverRequests.getWithQueryParams("/", Collections.singletonMap("foo", "bar")));
+        driver.run(requests);
+    }
+
+
+    @Test
     public void testRunWithNoRequests() {
         // Given
         final Driver driver = sut();
