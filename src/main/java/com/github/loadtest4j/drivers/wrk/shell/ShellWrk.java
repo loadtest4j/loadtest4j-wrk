@@ -8,8 +8,10 @@ import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.Scanner;
 
 import static java.lang.String.valueOf;
 
@@ -47,14 +49,13 @@ public class ShellWrk {
 
             final Process process = new Shell().start(command);
 
-            final int exitStatus = process.run();
+            final String report = streamToString(process.getStderr());
 
-            final InputStream jsonReport = process.getStderr();
-            final Output output = parse(jsonReport);
+            final int exitStatus = process.waitFor();
 
-            if (exitStatus != 0) throw new LoadTesterException("Command exited with an error");
+            if (exitStatus != 0) throw new LoadTesterException("Wrk error:\n\n" + report);
 
-            return output;
+            return parse(report);
         }
     }
 
@@ -76,11 +77,17 @@ public class ShellWrk {
         return AutoDeletingTempFile.create(scriptStream);
     }
 
-    private static Output parse(InputStream json) {
+    private static Output parse(String json) {
         try {
             return new ObjectMapper().readValue(json, Output.class);
         } catch (IOException e) {
             throw new LoadTesterException(e);
         }
+    }
+
+    private static String streamToString(InputStream is) {
+        // From https://stackoverflow.com/a/5445161
+        final Scanner s = new Scanner(is, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 }
