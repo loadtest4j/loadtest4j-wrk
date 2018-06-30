@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(IntegrationTest.class)
 public class WrkReportTest {
@@ -20,7 +20,7 @@ public class WrkReportTest {
 
         final URI uri = wrkReport.save(new Output());
 
-        assertEquals("file", uri.getScheme());
+        assertThat(uri).hasScheme("file");
     }
 
     @Test(expected = LoadTesterException.class)

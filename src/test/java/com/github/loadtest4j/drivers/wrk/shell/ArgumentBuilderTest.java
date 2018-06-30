@@ -4,11 +4,9 @@ import com.github.loadtest4j.drivers.wrk.junit.UnitTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
 public class ArgumentBuilderTest {
@@ -18,7 +16,7 @@ public class ArgumentBuilderTest {
 
         final List<String> args = sut.addArgument("foo").build();
 
-        assertEquals(Collections.singletonList("foo"), args);
+        assertThat(args).containsExactly("foo");
     }
 
     @Test
@@ -27,6 +25,6 @@ public class ArgumentBuilderTest {
 
         final List<String> args = sut.addNamedArgument("--foo", "bar").build();
 
-        assertEquals(Arrays.asList("--foo", "bar"), args);
+        assertThat(args).containsExactly("--foo", "bar");
     }
 }

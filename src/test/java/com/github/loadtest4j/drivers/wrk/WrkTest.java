@@ -1,10 +1,10 @@
 package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.drivers.wrk.junit.IntegrationTest;
+import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import com.github.loadtest4j.loadtest4j.driver.Driver;
 import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
 import com.github.loadtest4j.loadtest4j.driver.DriverResult;
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
@@ -18,14 +18,13 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.github.loadtest4j.drivers.wrk.junit.DriverResultAssert.assertThat;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.status;
 import static com.xebialabs.restito.semantics.Condition.*;
-import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class WrkTest {
@@ -73,13 +72,12 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertTrue(result.getOk() > 0);
-        assertEquals(0, result.getKo());
-        assertTrue(result.getActualDuration().toMillis() >= EXPECTED_DURATION.toMillis());
-        assertTrue(result.getResponseTime().getPercentile(100).toMillis() > 0);
-        final Optional<String> reportUrl = result.getReportUrl();
-        assertTrue(reportUrl.isPresent());
-        assertTrue(reportUrl.get().startsWith("file:///"));
+        assertThat(result)
+                .hasOkGreaterThan(0)
+                .hasKo(0)
+                .hasReportUrlWithScheme("file")
+                .hasActualDurationGreaterThan(EXPECTED_DURATION)
+                .hasMaxResponseTimeGreaterThan(Duration.ZERO);
     }
 
     @Test
@@ -96,8 +94,9 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertTrue(result.getOk() > 0);
-        assertEquals(0, result.getKo());
+        assertThat(result)
+                .hasOkGreaterThan(0)
+                .hasKo(0);
     }
 
     @Test
@@ -117,8 +116,9 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertTrue(result.getOk() > 0);
-        assertEquals(0, result.getKo());
+        assertThat(result)
+                .hasOkGreaterThan(0)
+                .hasKo(0);
     }
 
     @Test
@@ -140,8 +140,9 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertTrue(result.getOk() > 0);
-        assertEquals(0, result.getKo());
+        assertThat(result)
+                .hasOkGreaterThan(0)
+                .hasKo(0);
     }
 
     @Test
@@ -158,8 +159,9 @@ public class WrkTest {
         final DriverResult result = driver.run(requests);
 
         // Then
-        assertEquals(0, result.getOk());
-        assertTrue(result.getKo() > 0);
+        assertThat(result)
+                .hasOk(0)
+                .hasKoGreaterThan(0);
     }
 
     @Test
@@ -182,14 +184,11 @@ public class WrkTest {
         // Given
         final Driver driver = sut();
 
-        // When
-        try {
-            driver.run(Collections.emptyList());
+        // Expect
+        thrown.expect(LoadTesterException.class);
+        thrown.expectMessage("No requests were specified for the load test.");
 
-            fail("This should not work.");
-        } catch (LoadTesterException e) {
-            // Then
-            assertEquals("No requests were specified for the load test.", e.getMessage());
-        }
+        // When
+        driver.run(Collections.emptyList());
     }
 }

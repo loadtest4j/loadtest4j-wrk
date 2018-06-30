@@ -6,7 +6,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
 public class CommandTest {
@@ -14,11 +14,11 @@ public class CommandTest {
 
     @Test
     public void testGetLaunchPath() {
-        assertEquals("whoami", command.getLaunchPath());
+        assertThat(command.getLaunchPath()).isEqualTo("whoami");
     }
 
     @Test
     public void testGetArguments() {
-        assertEquals(Arrays.asList("foo", "bar"), command.getArguments());
+        assertThat(command.getArguments()).containsExactly("foo", "bar");
     }
 }

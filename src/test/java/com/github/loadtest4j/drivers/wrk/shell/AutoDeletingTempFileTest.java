@@ -4,8 +4,7 @@ import com.github.loadtest4j.drivers.wrk.junit.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(IntegrationTest.class)
 public class AutoDeletingTempFileTest {
@@ -13,10 +12,10 @@ public class AutoDeletingTempFileTest {
     public void testCreateAndClose() {
         final AutoDeletingTempFile sut = AutoDeletingTempFile.create("foo");
 
-        assertTrue(sut.exists());
+        assertThat(sut.exists()).isTrue();
 
         sut.close();
 
-        assertFalse(sut.exists());
+        assertThat(sut.exists()).isFalse();
     }
 }

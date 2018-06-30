@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
 public class WrkFactoryTest {
@@ -32,9 +30,7 @@ public class WrkFactoryTest {
 
         final Set<String> mandatoryProperties = sut.getMandatoryProperties();
 
-        assertEquals(2, mandatoryProperties.size());
-        assertTrue(mandatoryProperties.contains("duration"));
-        assertTrue(mandatoryProperties.contains("url"));
+        assertThat(mandatoryProperties).containsExactly("duration", "url");
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -54,6 +50,6 @@ public class WrkFactoryTest {
 
         final Driver driver = sut.create(properties);
 
-        assertNotNull(driver);
+        assertThat(driver).isInstanceOf(Wrk.class);
     }
 }

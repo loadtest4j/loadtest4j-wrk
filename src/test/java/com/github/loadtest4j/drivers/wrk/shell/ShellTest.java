@@ -6,7 +6,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(IntegrationTest.class)
 public class ShellTest {
@@ -17,6 +17,6 @@ public class ShellTest {
         final Command command = new Command(Collections.emptyList(), "whoami");
         final int exitStatus = sut.start(command).waitFor();
 
-        assertEquals(0, exitStatus);
+        assertThat(exitStatus).isEqualTo(0);
     }
 }

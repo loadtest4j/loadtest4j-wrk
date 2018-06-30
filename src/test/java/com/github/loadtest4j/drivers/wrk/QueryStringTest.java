@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
 public class QueryStringTest {
@@ -17,7 +17,7 @@ public class QueryStringTest {
     public void testQueryString() {
         final QueryString queryString = new QueryString(Collections.singletonMap("foo", "1"));
 
-        assertEquals("?foo=1", queryString.toString());
+        assertThat(queryString).hasToString("?foo=1");
     }
 
     @Test
@@ -29,6 +29,6 @@ public class QueryStringTest {
 
         final QueryString queryString = new QueryString(queryParams);
 
-        assertEquals("?foo=1&bar=2", queryString.toString());
+        assertThat(queryString).hasToString("?foo=1&bar=2");
     }
 }
