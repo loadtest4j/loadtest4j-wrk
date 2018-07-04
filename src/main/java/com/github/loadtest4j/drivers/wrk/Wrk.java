@@ -106,8 +106,10 @@ class Wrk implements Driver {
         // 16 requests in 2.06s, 5.50KB read
         //  Non-2xx or 3xx responses: 16
         //
-        // This means that in wrk parlance, 'requests' = the total number of requests, not the number of OK requests
-        final long ok = requests - ko;
+        // This means that in wrk parlance...
+        // 'requests' = the total number of requests, not the number of OK requests.
+        // 'errors' = HTTP status errors, not including any socket errors.
+        final long ok = requests - errors.getStatus();
 
         final ResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
 
