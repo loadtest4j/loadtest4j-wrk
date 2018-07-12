@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.shell.input;
+package com.github.loadtest4j.drivers.wrk.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,12 +1,12 @@
-package com.github.loadtest4j.drivers.wrk;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class QueryString {
+public class QueryString {
     private final Map<String, String> queryParams;
 
-    QueryString(Map<String, String> queryParams) {
+    private QueryString(Map<String, String> queryParams) {
         this.queryParams = queryParams;
     }
 
@@ -20,5 +20,9 @@ class QueryString {
                 .stream()
                 .map((entry) -> String.format("%s=%s", entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining("&"));
+    }
+
+    public static String fromMap(Map<String, String> queryParams) {
+        return new QueryString(queryParams).toString();
     }
 }

@@ -1,24 +1,24 @@
-package com.github.loadtest4j.drivers.wrk.shell;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class ArgumentBuilder {
+public class ArgumentBuilder {
     private final List<String> arguments = new ArrayList<>();
 
-    protected ArgumentBuilder addArgument(String argument) {
+    public ArgumentBuilder addArgument(String argument) {
         this.arguments.add(argument);
         return this;
     }
 
-    protected ArgumentBuilder addNamedArgument(String name, String value) {
+    public ArgumentBuilder addNamedArgument(String name, String value) {
         this.arguments.add(name);
         this.arguments.add(value);
         return this;
     }
 
-    protected List<String> build() {
+    public List<String> build() {
         return Collections.unmodifiableList(this.arguments);
     }
 }

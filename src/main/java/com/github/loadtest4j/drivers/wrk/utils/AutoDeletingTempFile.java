@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.shell;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-class AutoDeletingTempFile implements AutoCloseable {
+public class AutoDeletingTempFile implements AutoCloseable {
 
     private final Path path;
 
@@ -29,11 +29,11 @@ class AutoDeletingTempFile implements AutoCloseable {
         return Files.exists(path);
     }
 
-    protected String getAbsolutePath() {
+    public String getAbsolutePath() {
         return path.toAbsolutePath().toString();
     }
 
-    protected static AutoDeletingTempFile create(InputStream inputStream) {
+    public static AutoDeletingTempFile create(InputStream inputStream) {
         try {
             final Path path = Files.createTempFile(null, null);
             Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
@@ -43,7 +43,7 @@ class AutoDeletingTempFile implements AutoCloseable {
         }
     }
 
-    protected static AutoDeletingTempFile create(String contents) {
+    public static AutoDeletingTempFile create(String contents) {
         try {
             final Path path = Files.createTempFile(null, null);
             writeStringToFile(path.toFile(), contents);

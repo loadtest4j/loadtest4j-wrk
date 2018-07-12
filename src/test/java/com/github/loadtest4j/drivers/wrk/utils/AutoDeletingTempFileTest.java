@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.shell;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import com.github.loadtest4j.drivers.wrk.junit.IntegrationTest;
 import org.junit.Test;

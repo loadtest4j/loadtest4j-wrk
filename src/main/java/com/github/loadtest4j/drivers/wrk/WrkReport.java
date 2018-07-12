@@ -1,7 +1,7 @@
 package com.github.loadtest4j.drivers.wrk;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.loadtest4j.drivers.wrk.shell.output.Output;
+import com.github.loadtest4j.drivers.wrk.dto.Output;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
 import java.io.File;

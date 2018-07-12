@@ -1,7 +1,7 @@
 package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.drivers.wrk.junit.IntegrationTest;
-import com.github.loadtest4j.drivers.wrk.shell.output.Output;
+import com.github.loadtest4j.drivers.wrk.dto.Output;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
