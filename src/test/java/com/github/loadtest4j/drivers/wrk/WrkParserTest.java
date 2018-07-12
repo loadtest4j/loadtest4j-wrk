@@ -15,7 +15,7 @@ import static com.github.loadtest4j.drivers.wrk.junit.DriverResultAssert.assertT
 public class WrkParserTest {
 
     private static URL report(String name) {
-        return WrkParserTest.class.getClassLoader().getResource("fixtures/" + name);
+        return WrkParserTest.class.getClassLoader().getResource("fixtures/reports/" + name);
     }
 
     @Test
