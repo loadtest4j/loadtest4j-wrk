@@ -1,6 +1,7 @@
 package com.github.loadtest4j.drivers.wrk;
 
 import com.github.loadtest4j.drivers.wrk.junit.UnitTest;
+import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -14,7 +15,7 @@ import static com.github.loadtest4j.drivers.wrk.junit.DriverResultAssert.assertT
 public class WrkParserTest {
 
     private static URL report(String name) {
-        return WrkParserTest.class.getClassLoader().getResource("fixtures/" + name);
+        return WrkParserTest.class.getClassLoader().getResource("fixtures/reports/" + name);
     }
 
     @Test
@@ -61,5 +62,12 @@ public class WrkParserTest {
         assertThat(driverResult)
                 .hasKo(5)
                 .hasOk(7);
+    }
+
+    @Test(expected = LoadTesterException.class)
+    public void testInvalidReport() {
+        final URL report = report("invalid.json");
+
+        Wrk.toDriverResult(report);
     }
 }

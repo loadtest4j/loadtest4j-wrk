@@ -1,7 +1,5 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.loadtest4j.drivers.wrk.dto.*;
 import com.github.loadtest4j.drivers.wrk.utils.*;
 import com.github.loadtest4j.drivers.wrk.utils.Process;
@@ -11,9 +9,11 @@ import com.github.loadtest4j.loadtest4j.driver.Driver;
 import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
 import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 
-import java.io.*;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -45,11 +45,11 @@ class Wrk implements Driver {
     public DriverResult run(List<DriverRequest> requests) {
         validateNotEmpty(requests);
 
-        final String input = createInput(requests);
+        final Path input = createInput(requests);
 
-        final URL report = runWrkViaShell(input);
+        final Path report = runWrkViaShell(input);
 
-        return toDriverResult(report);
+        return toDriverResult(report.toUri());
     }
 
     private static <T> void validateNotEmpty(Collection<T> requests) {
@@ -58,66 +58,58 @@ class Wrk implements Driver {
         }
     }
 
-    private static String createInput(List<DriverRequest> requests) {
+    private static Path createInput(List<DriverRequest> requests) {
         final List<Req> wrkRequests = wrkRequests(requests);
         final Input input = new Input(wrkRequests);
+        final Path inputPath = TempFile.createTempFile("loadtest4j-wrk", ".json");
+        Json.serialize(inputPath.toFile(), input);
+        return inputPath;
+    }
+
+    private Path runWrkViaShell(Path input) {
+        final Path luaScript = createLuaScript();
+
+        final Path output = TempFile.createTempFile("wrk", ".json");
+
+        final List<String> arguments = new ArgumentBuilder()
+                .addNamedArgument("--connections", valueOf(connections))
+                .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
+                .addNamedArgument("--script", luaScript.toString())
+                .addNamedArgument("--threads", valueOf(threads))
+                .addArgument(url)
+                .addArgument(input.toString())
+                .build();
+
+        final Command command = new Command(arguments, executable);
+
+        final Process process = new Shell().start(command);
+
+        final int exitStatus = process.waitFor();
+
+        if (exitStatus != 0) {
+            final String error = StreamReader.streamToString(process.getStderr());
+            throw new LoadTesterException("Wrk error:\n\n" + error);
+        }
+
+        TempFile.copy(process.getStderr(), output);
+
+        return output;
+    }
+
+    private static DriverResult toDriverResult(URI report) {
         try {
-            return new ObjectMapper().writeValueAsString(input);
-        } catch (JsonProcessingException e) {
+            return toDriverResult(report.toURL());
+        } catch (MalformedURLException e) {
             throw new LoadTesterException(e);
         }
     }
 
-    private URL runWrkViaShell(String input) {
-        try (AutoDeletingTempFile luaScript = createLuaScript();
-             AutoDeletingTempFile luaInput = AutoDeletingTempFile.create(input)) {
-            final List<String> arguments = new ArgumentBuilder()
-                    .addNamedArgument("--connections", valueOf(connections))
-                    .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
-                    .addNamedArgument("--script", luaScript.getAbsolutePath())
-                    .addNamedArgument("--threads", valueOf(threads))
-                    .addArgument(url)
-                    .addArgument(luaInput.getAbsolutePath())
-                    .build();
-
-            final Command command = new Command(arguments, executable);
-
-            final Process process = new Shell().start(command);
-
-            final String report = StreamReader.streamToString(process.getStderr());
-
-            final int exitStatus = process.waitFor();
-
-            if (exitStatus != 0) throw new LoadTesterException("Wrk error:\n\n" + report);
-
-            return writeReport(report);
-        }
+    protected static DriverResult toDriverResult(URL report) {
+        final Output output = Json.parse(report, Output.class);
+        return toDriverResult(output, report.toString());
     }
 
-    private static URL writeReport(String report) {
-        try {
-            final File file = File.createTempFile("wrk", "json");
-
-            try (Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-                w.write(report);
-            }
-
-            return file.toPath().toUri().toURL();
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
-    }
-
-    protected static DriverResult toDriverResult(URL reportUrl) {
-        try {
-            final Output output = new ObjectMapper().readValue(reportUrl, Output.class);
-            return toDriverResult(output, reportUrl);
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
-    }
-
-    private static DriverResult toDriverResult(Output output, URL reportUrl) {
+    private static DriverResult toDriverResult(Output output, String reportUrl) {
         final Summary summary = output.getSummary();
 
         final Errors errors = summary.getErrors();
@@ -140,12 +132,14 @@ class Wrk implements Driver {
 
         final ResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
 
-        return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl.toString());
+        return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl);
     }
 
-    private static AutoDeletingTempFile createLuaScript() {
+    private static Path createLuaScript() {
         final InputStream scriptStream = Wrk.class.getResourceAsStream("/loadtest4j-wrk.lua");
-        return AutoDeletingTempFile.create(scriptStream);
+        final Path script = TempFile.createTempFile("loadtest4j-wrk", ".lua");
+        TempFile.copy(scriptStream, script);
+        return script;
     }
 
     private static List<Req> wrkRequests(List<DriverRequest> requests) {

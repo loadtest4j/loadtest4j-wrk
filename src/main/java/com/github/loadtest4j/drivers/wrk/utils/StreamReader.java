@@ -1,5 +1,6 @@
 package com.github.loadtest4j.drivers.wrk.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
@@ -11,4 +12,7 @@ public class StreamReader {
         return s.hasNext() ? s.next() : "";
     }
 
+    public static InputStream stringToStream(String str) {
+        return new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8));
+    }
 }
