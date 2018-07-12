@@ -2,8 +2,8 @@ package com.github.loadtest4j.drivers.wrk.utils;
 
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -44,18 +44,7 @@ public class AutoDeletingTempFile implements AutoCloseable {
     }
 
     public static AutoDeletingTempFile create(String contents) {
-        try {
-            final Path path = Files.createTempFile(null, null);
-            writeStringToFile(path.toFile(), contents);
-            return new AutoDeletingTempFile(path);
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
-    }
-
-    private static void writeStringToFile(File file, String contents) throws IOException {
-        try (Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-            w.write(contents);
-        }
+        final InputStream stream = StreamReader.stringToStream(contents);
+        return AutoDeletingTempFile.create(stream);
     }
 }
