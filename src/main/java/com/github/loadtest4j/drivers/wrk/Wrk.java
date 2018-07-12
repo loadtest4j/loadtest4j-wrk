@@ -69,7 +69,6 @@ class Wrk implements Driver {
     }
 
     private URL runWrkViaShell(String input) {
-        // Takes raw input, gives raw output. Makes no attempt to understand the contents.
         try (AutoDeletingTempFile luaScript = createLuaScript();
              AutoDeletingTempFile luaInput = AutoDeletingTempFile.create(input)) {
             final List<String> arguments = new ArgumentBuilder()
@@ -143,8 +142,6 @@ class Wrk implements Driver {
 
         return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl.toString());
     }
-
-    // FIXME extras
 
     private static AutoDeletingTempFile createLuaScript() {
         final InputStream scriptStream = Wrk.class.getResourceAsStream("/loadtest4j-wrk.lua");
