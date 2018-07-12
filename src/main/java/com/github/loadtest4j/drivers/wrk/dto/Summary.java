@@ -1,11 +1,10 @@
 package com.github.loadtest4j.drivers.wrk.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Summary {
-    @JsonProperty
-    private long bytes;
-
     @JsonProperty
     private long duration;
 
@@ -14,10 +13,6 @@ public class Summary {
 
     @JsonProperty
     private long requests;
-
-    public long getBytes() {
-        return bytes;
-    }
 
     public long getDuration() {
         return duration;
