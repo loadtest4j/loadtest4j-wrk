@@ -1,0 +1,14 @@
+package com.github.loadtest4j.drivers.wrk.utils;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
+public class StreamReader {
+    public static String streamToString(InputStream is) {
+        // From https://stackoverflow.com/a/5445161
+        final Scanner s = new Scanner(is, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
+
+}

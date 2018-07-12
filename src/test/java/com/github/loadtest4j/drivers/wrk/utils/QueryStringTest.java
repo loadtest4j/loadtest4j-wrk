@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import com.github.loadtest4j.drivers.wrk.junit.UnitTest;
 import org.junit.Test;
@@ -15,9 +15,9 @@ public class QueryStringTest {
 
     @Test
     public void testQueryString() {
-        final QueryString queryString = new QueryString(Collections.singletonMap("foo", "1"));
+        final String queryString = QueryString.fromMap(Collections.singletonMap("foo", "1"));
 
-        assertThat(queryString).hasToString("?foo=1");
+        assertThat(queryString).isEqualTo("?foo=1");
     }
 
     @Test
@@ -27,8 +27,8 @@ public class QueryStringTest {
             put("bar", "2");
         }};
 
-        final QueryString queryString = new QueryString(queryParams);
+        final String queryString = QueryString.fromMap(queryParams);
 
-        assertThat(queryString).hasToString("?foo=1&bar=2");
+        assertThat(queryString).isEqualTo("?foo=1&bar=2");
     }
 }

@@ -1,23 +1,23 @@
-package com.github.loadtest4j.drivers.wrk.shell;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import java.util.Collections;
 import java.util.List;
 
-class Command {
+public class Command {
 
     private final List<String> arguments;
     private final String launchPath;
 
-    Command(List<String> arguments, String launchPath) {
+    public Command(List<String> arguments, String launchPath) {
         this.arguments = arguments;
         this.launchPath = launchPath;
     }
 
-    protected List<String> getArguments() {
+    public List<String> getArguments() {
         return Collections.unmodifiableList(arguments);
     }
 
-    protected String getLaunchPath() {
+    public String getLaunchPath() {
         return launchPath;
     }
 }

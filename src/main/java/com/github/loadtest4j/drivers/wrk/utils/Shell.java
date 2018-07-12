@@ -1,4 +1,4 @@
-package com.github.loadtest4j.drivers.wrk.shell;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-class Shell {
+public class Shell {
 
-    protected Process start(Command command) {
+    public Process start(Command command) {
         final List<String> cmd = new ArrayList<>();
         cmd.add(command.getLaunchPath());
         cmd.addAll(command.getArguments());

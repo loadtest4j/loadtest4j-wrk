@@ -1,10 +1,10 @@
-package com.github.loadtest4j.drivers.wrk.shell;
+package com.github.loadtest4j.drivers.wrk.utils;
 
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
 
 import java.io.InputStream;
 
-class Process {
+public class Process {
 
     private final java.lang.Process process;
 
@@ -12,11 +12,11 @@ class Process {
         this.process = process;
     }
 
-    protected InputStream getStderr() {
+    public InputStream getStderr() {
         return process.getErrorStream();
     }
 
-    protected Integer waitFor() {
+    public Integer waitFor() {
         try {
             return process.waitFor();
         } catch (InterruptedException e) {
