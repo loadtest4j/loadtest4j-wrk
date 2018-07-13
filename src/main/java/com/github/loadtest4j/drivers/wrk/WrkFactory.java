@@ -10,7 +10,7 @@ public class WrkFactory implements DriverFactory {
 
     @Override
     public Set<String> getMandatoryProperties() {
-        return setOf("duration", "url");
+        return setOf("connections", "duration", "threads", "url");
     }
 
     /**
@@ -18,21 +18,21 @@ public class WrkFactory implements DriverFactory {
      *
      * Mandatory properties:
      *
+     * - `connections`
      * - `duration`
+     * - `threads`
      * - `url`
      *
      * Optional properties:
      *
-     * - `connections` (defaults to 1)
      * - `executable` (defaults to `wrk`, and is located using the PATH)
-     * - `threads` (defaults to 1)
      */
     @Override
     public Driver create(Map<String, String> properties) {
         final Duration duration = Duration.ofSeconds(Long.parseLong(properties.get("duration")));
-        final int connections = Integer.parseInt(properties.getOrDefault("connections", "1"));
+        final int connections = Integer.parseInt(properties.get("connections"));
         final String executable = properties.getOrDefault("executable", "wrk");
-        final int threads = Integer.parseInt(properties.getOrDefault("threads", "1"));
+        final int threads = Integer.parseInt(properties.get("threads"));
         final String url = properties.get("url");
 
         return new Wrk(connections, duration, executable, threads, url);
@@ -40,7 +40,7 @@ public class WrkFactory implements DriverFactory {
 
     private static Set<String> setOf(String... values) {
         // This utility method can be replaced when Java 9+ is more widely adopted
-        final Set<String> internalSet = new HashSet<>(Arrays.asList(values));
+        final Set<String> internalSet = new LinkedHashSet<>(Arrays.asList(values));
         return Collections.unmodifiableSet(internalSet);
     }
 }
