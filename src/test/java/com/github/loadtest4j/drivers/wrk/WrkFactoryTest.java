@@ -30,7 +30,7 @@ public class WrkFactoryTest {
 
         final Set<String> mandatoryProperties = sut.getMandatoryProperties();
 
-        assertThat(mandatoryProperties).containsExactly("duration", "url");
+        assertThat(mandatoryProperties).containsExactly("connections", "duration", "threads", "url");
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -45,7 +45,9 @@ public class WrkFactoryTest {
         final DriverFactory sut = sut();
 
         final Map<String, String> properties = new HashMap<>();
+        properties.put("connections", "1");
         properties.put("duration", "2");
+        properties.put("threads", "1");
         properties.put("url", "https://example.com");
 
         final Driver driver = sut.create(properties);

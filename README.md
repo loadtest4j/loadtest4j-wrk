@@ -8,40 +8,40 @@ The `wrk` driver for loadtest4j.
 
 ## Setup
 
-Add the [JitPack](https://jitpack.io) repository to your pom.xml:
+1. **Add the library** to your `pom.xml`:
 
-```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
+    ```xml
+     <dependency>
+         <groupId>com.github.loadtest4j</groupId>
+         <artifactId>loadtest4j-wrk</artifactId>
+         <version>[version]</version>
+     </dependency>   
+     
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    ```
 
-Then add this library:
+2. **Configure the driver** in `src/test/resources/loadtest4j.properties`:
+    
+    ```properties
+    loadtest4j.driver = com.github.loadtest4j.drivers.wrk.WrkFactory
+    loadtest4j.driver.connections = 1
+    loadtest4j.driver.duration = 30
+    loadtest4j.driver.threads = 1
+    loadtest4j.driver.url = https://example.com
+    ```
 
-```xml
-<dependency>
-    <groupId>com.github.loadtest4j</groupId>
-    <artifactId>loadtest4j-wrk</artifactId>
-    <version>[git tag]</version>
-</dependency>
-```
+3. **Install the `wrk` executable**, and make it available on your `$PATH`:
 
-Then install the `wrk` command line executable, and make it available on your `$PATH`:
+    - Homebrew: run `brew install wrk`.
+    - Compile from source: check out the instructions in `.travis.yml`.
 
-- With Homebrew: run `brew install wrk`.
-- Without Homebrew: check out the installation method in `.travis.yml`.
+4. **Write your load tests** using the standard [LoadTester API](https://github.com/loadtest4j/loadtest4j).
 
-## Usage
 
-Add the file `loadtest4j.properties` to your `src/test/resources` directory and configure the load test driver:
 
-```
-loadtest4j.driver = com.github.loadtest4j.drivers.wrk.WrkFactory
-loadtest4j.driver.duration = 30
-loadtest4j.driver.url = https://example.com
-```
 
-Then write your load tests in Java using the standard `LoadTester` API.
