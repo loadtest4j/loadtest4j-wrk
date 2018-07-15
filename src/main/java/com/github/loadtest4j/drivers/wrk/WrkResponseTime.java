@@ -1,11 +1,11 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.ResponseTime;
+import com.github.loadtest4j.loadtest4j.driver.DriverResponseTime;
 
 import java.time.Duration;
 import java.util.Map;
 
-class WrkResponseTime implements ResponseTime {
+class WrkResponseTime implements DriverResponseTime {
 
     private final Map<Integer, Long> percentiles;
 

@@ -1,6 +1,6 @@
 package com.github.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.ResponseTime;
+import com.github.loadtest4j.loadtest4j.driver.DriverResponseTime;
 import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 
 import java.time.Duration;
@@ -11,10 +11,10 @@ class WrkResult implements DriverResult {
     private final long ok;
     private final long ko;
     private final Duration actualDuration;
-    private final ResponseTime responseTime;
+    private final DriverResponseTime responseTime;
     private final String reportUrl;
 
-    WrkResult(long ok, long ko, Duration actualDuration, ResponseTime responseTime, String reportUrl) {
+    WrkResult(long ok, long ko, Duration actualDuration, DriverResponseTime responseTime, String reportUrl) {
         this.ok = ok;
         this.ko = ko;
         this.actualDuration = actualDuration;
@@ -38,7 +38,7 @@ class WrkResult implements DriverResult {
     }
 
     @Override
-    public ResponseTime getResponseTime() {
+    public DriverResponseTime getResponseTime() {
         return responseTime;
     }
 
