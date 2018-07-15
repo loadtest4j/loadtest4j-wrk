@@ -4,7 +4,7 @@ import com.github.loadtest4j.drivers.wrk.dto.*;
 import com.github.loadtest4j.drivers.wrk.utils.*;
 import com.github.loadtest4j.drivers.wrk.utils.Process;
 import com.github.loadtest4j.loadtest4j.LoadTesterException;
-import com.github.loadtest4j.loadtest4j.ResponseTime;
+import com.github.loadtest4j.loadtest4j.driver.DriverResponseTime;
 import com.github.loadtest4j.loadtest4j.driver.Driver;
 import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
 import com.github.loadtest4j.loadtest4j.driver.DriverResult;
@@ -130,7 +130,7 @@ class Wrk implements Driver {
         // 'errors' = HTTP status errors, not including any socket errors.
         final long ok = requests - errors.getStatus();
 
-        final ResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
+        final DriverResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
 
         return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl);
     }
