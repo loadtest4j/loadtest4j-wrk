@@ -34,7 +34,7 @@ The Wrk driver for loadtest4j.
     loadtest4j.driver.url = https://example.com
     ```
 
-3. **Install the `wrk` executable**, and make it available on your `$PATH`:
+3. **Install the `wrk` executable** on your `$PATH`:
 
     - Homebrew: run `brew install wrk`.
     - Compile-from-source: check out the instructions in [`.travis.yml`](.travis.yml).
