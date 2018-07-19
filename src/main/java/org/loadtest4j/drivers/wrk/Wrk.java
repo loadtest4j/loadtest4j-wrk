@@ -1,12 +1,12 @@
 package org.loadtest4j.drivers.wrk;
 
-import org.loadtest4j.drivers.wrk.utils.*;
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
-import com.github.loadtest4j.loadtest4j.driver.DriverResponseTime;
-import com.github.loadtest4j.loadtest4j.driver.Driver;
-import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
-import com.github.loadtest4j.loadtest4j.driver.DriverResult;
+import org.loadtest4j.LoadTesterException;
+import org.loadtest4j.driver.Driver;
+import org.loadtest4j.driver.DriverRequest;
+import org.loadtest4j.driver.DriverResponseTime;
+import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.dto.*;
+import org.loadtest4j.drivers.wrk.utils.*;
 import org.loadtest4j.drivers.wrk.utils.Process;
 
 import java.io.InputStream;

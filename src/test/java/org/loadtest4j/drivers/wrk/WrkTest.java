@@ -1,10 +1,5 @@
 package org.loadtest4j.drivers.wrk;
 
-import org.loadtest4j.drivers.wrk.junit.IntegrationTest;
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
-import com.github.loadtest4j.loadtest4j.driver.Driver;
-import com.github.loadtest4j.loadtest4j.driver.DriverRequest;
-import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 import com.xebialabs.restito.server.StubServer;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import org.junit.After;
@@ -13,7 +8,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
+import org.loadtest4j.LoadTesterException;
+import org.loadtest4j.driver.Driver;
+import org.loadtest4j.driver.DriverRequest;
+import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.junit.DriverResultAssert;
+import org.loadtest4j.drivers.wrk.junit.IntegrationTest;
 
 import java.time.Duration;
 import java.util.Arrays;

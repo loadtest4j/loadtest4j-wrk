@@ -1,6 +1,6 @@
 package org.loadtest4j.drivers.wrk.utils;
 
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
+import org.loadtest4j.LoadTesterException;
 
 import java.io.IOException;
 import java.io.InputStream;

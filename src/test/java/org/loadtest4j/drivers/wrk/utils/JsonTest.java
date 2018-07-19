@@ -1,10 +1,10 @@
 package org.loadtest4j.drivers.wrk.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.loadtest4j.drivers.wrk.junit.IntegrationTest;
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.loadtest4j.LoadTesterException;
+import org.loadtest4j.drivers.wrk.junit.IntegrationTest;
 
 import java.io.File;
 import java.net.MalformedURLException;

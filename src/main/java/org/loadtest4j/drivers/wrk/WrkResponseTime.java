@@ -1,6 +1,6 @@
 package org.loadtest4j.drivers.wrk;
 
-import com.github.loadtest4j.loadtest4j.driver.DriverResponseTime;
+import org.loadtest4j.driver.DriverResponseTime;
 
 import java.time.Duration;
 import java.util.Map;

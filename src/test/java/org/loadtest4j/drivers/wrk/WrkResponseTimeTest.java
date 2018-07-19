@@ -1,9 +1,9 @@
 package org.loadtest4j.drivers.wrk;
 
-import org.loadtest4j.drivers.wrk.junit.UnitTest;
-import com.github.loadtest4j.loadtest4j.driver.DriverResponseTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.loadtest4j.driver.DriverResponseTime;
+import org.loadtest4j.drivers.wrk.junit.UnitTest;
 
 import java.time.Duration;
 import java.util.Collections;

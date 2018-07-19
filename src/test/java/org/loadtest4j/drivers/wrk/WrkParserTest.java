@@ -1,10 +1,10 @@
 package org.loadtest4j.drivers.wrk;
 
-import org.loadtest4j.drivers.wrk.junit.UnitTest;
-import com.github.loadtest4j.loadtest4j.LoadTesterException;
-import com.github.loadtest4j.loadtest4j.driver.DriverResult;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.loadtest4j.LoadTesterException;
+import org.loadtest4j.driver.DriverResult;
+import org.loadtest4j.drivers.wrk.junit.UnitTest;
 
 import java.net.URL;
 import java.time.Duration;
