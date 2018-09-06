@@ -15,6 +15,7 @@ The Wrk driver for loadtest4j.
         <groupId>com.github.loadtest4j</groupId>
         <artifactId>loadtest4j-wrk</artifactId>
         <version>[version]</version>
+        <scope>test</scope>
     </dependency>   
     ```
      
