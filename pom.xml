@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.loadtest4j.drivers</groupId>
     <artifactId>loadtest4j-wrk</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.2</version>
 
     <name>${project.artifactId}</name>
     <url>https://github.com/loadtest4j/loadtest4j-wrk</url>
@@ -143,4 +143,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 </project>
