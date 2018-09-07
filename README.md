@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/loadtest4j/loadtest4j-wrk.svg?branch=master)](https://travis-ci.com/loadtest4j/loadtest4j-wrk)
 [![Codecov](https://codecov.io/gh/loadtest4j/loadtest4j-wrk/branch/master/graph/badge.svg)](https://codecov.io/gh/loadtest4j/loadtest4j-wrk)
-[![JitPack Release](https://jitpack.io/v/com.github.loadtest4j/loadtest4j-wrk.svg)](https://jitpack.io/#com.github.loadtest4j/loadtest4j-wrk)
+[![Maven Central](https://img.shields.io/maven-central/v/org.loadtest4j.drivers/loadtest4j-wrk.svg)](http://repo2.maven.org/maven2/org/loadtest4j/drivers/loadtest4j-wrk/)
 
 Wrk driver for loadtest4j.
 
@@ -12,18 +12,11 @@ Wrk driver for loadtest4j.
 
     ```xml
     <dependency>
-        <groupId>com.github.loadtest4j</groupId>
+        <groupId>org.loadtest4j.drivers</groupId>
         <artifactId>loadtest4j-wrk</artifactId>
         <version>[version]</version>
         <scope>test</scope>
     </dependency>   
-    ```
-     
-    ```xml
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
     ```
 
 2. **Configure the driver** in `src/test/resources/loadtest4j.properties`:
