@@ -4,7 +4,7 @@
 [![Codecov](https://codecov.io/gh/loadtest4j/loadtest4j-wrk/branch/master/graph/badge.svg)](https://codecov.io/gh/loadtest4j/loadtest4j-wrk)
 [![JitPack Release](https://jitpack.io/v/com.github.loadtest4j/loadtest4j-wrk.svg)](https://jitpack.io/#com.github.loadtest4j/loadtest4j-wrk)
 
-The Wrk driver for loadtest4j.
+Wrk driver for loadtest4j.
 
 ## Setup
 
