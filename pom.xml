@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.loadtest4j.drivers</groupId>
     <artifactId>loadtest4j-wrk</artifactId>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
 
     <name>${project.artifactId}</name>
     <url>https://github.com/loadtest4j/loadtest4j-wrk</url>
@@ -140,6 +140,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
             </plugin>
         </plugins>
     </build>
