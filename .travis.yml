@@ -21,7 +21,15 @@ before_install:
 - test -f $WRK_PATH/wrk || make -C $WRK_PATH
 - export PATH=$PATH:$WRK_PATH
 
-script: mvn verify -B
+before_script: echo $GPG_SECRET_KEYS | base64 --decode | gpg --import
 
-after_success:
-- bash <(curl -s https://codecov.io/bash)
+script: mvn -B -s .settings.xml verify
+
+after_success: bash <(curl -s https://codecov.io/bash)
+
+deploy:
+  provider: script
+  script: mvn -B -s .settings.xml clean verify gpg:sign deploy:deploy
+  skip_cleanup: true
+  on:
+    tags: true
