@@ -5,7 +5,7 @@ import org.loadtest4j.LoadTesterException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.Reader;
 
 public class Json {
 
@@ -19,7 +19,7 @@ public class Json {
         }
     }
 
-    public static <T> T parse(URL src, Class<T> valueType) {
+    public static <T> T parse(Reader src, Class<T> valueType) {
         try {
             return MAPPER.readValue(src, valueType);
         } catch (IOException e) {

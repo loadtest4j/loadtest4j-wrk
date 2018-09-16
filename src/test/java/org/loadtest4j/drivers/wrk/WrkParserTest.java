@@ -6,7 +6,10 @@ import org.loadtest4j.LoadTesterException;
 import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.junit.UnitTest;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 import static org.loadtest4j.drivers.wrk.junit.DriverResultAssert.assertThat;
@@ -14,60 +17,50 @@ import static org.loadtest4j.drivers.wrk.junit.DriverResultAssert.assertThat;
 @Category(UnitTest.class)
 public class WrkParserTest {
 
-    private static URL report(String name) {
-        return WrkParserTest.class.getClassLoader().getResource("fixtures/reports/" + name);
+    private static Reader report(String name) {
+        return new InputStreamReader(WrkParserTest.class.getClassLoader().getResourceAsStream("fixtures/reports/" + name), StandardCharsets.UTF_8);
+    }
+
+    private static DriverResult driverResult(String name) {
+        try (Reader r = report(name)) {
+            return Wrk.toDriverResult(r);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void testValidReport() {
-        final URL report = report("report.json");
-
-        final DriverResult driverResult = Wrk.toDriverResult(report);
-
-        assertThat(driverResult)
+        assertThat(driverResult("report.json"))
                 .hasKo(0)
                 .hasOk(1143)
                 .hasResponseTimePercentile(73, Duration.ofMillis(1))
-                .hasReportUrlWithScheme("file");
+                .hasNoReportUrl();
     }
 
     @Test
     public void testReportWithStatusErrors() {
-        final URL report = report("status_errors.json");
-
-        final DriverResult driverResult = Wrk.toDriverResult(report);
-
-        assertThat(driverResult)
+        assertThat(driverResult("status_errors.json"))
                 .hasKo(5)
                 .hasOk(3);
     }
 
     @Test
     public void testReportWithSocketErrors() {
-        final URL report = report("socket_errors.json");
-
-        final DriverResult driverResult = Wrk.toDriverResult(report);
-
-        assertThat(driverResult)
+        assertThat(driverResult("socket_errors.json"))
                 .hasKo(4)
                 .hasOk(8);
     }
 
     @Test
     public void testReportWithSocketAndStatusErrors() {
-        final URL report = report("socket_and_status_errors.json");
-
-        final DriverResult driverResult = Wrk.toDriverResult(report);
-
-        assertThat(driverResult)
+        assertThat(driverResult("socket_and_status_errors.json"))
                 .hasKo(5)
                 .hasOk(7);
     }
 
     @Test(expected = LoadTesterException.class)
     public void testInvalidReport() {
-        final URL report = report("invalid.json");
-
-        Wrk.toDriverResult(report);
+        driverResult("invalid.json");
     }
 }

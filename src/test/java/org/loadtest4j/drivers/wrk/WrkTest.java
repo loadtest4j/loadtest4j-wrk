@@ -75,7 +75,7 @@ public class WrkTest {
         DriverResultAssert.assertThat(result)
                 .hasOkGreaterThan(0)
                 .hasKo(0)
-                .hasReportUrlWithScheme("file")
+                .hasNoReportUrl()
                 .hasActualDurationGreaterThan(EXPECTED_DURATION)
                 .hasMaxResponseTimeGreaterThan(Duration.ZERO);
     }
