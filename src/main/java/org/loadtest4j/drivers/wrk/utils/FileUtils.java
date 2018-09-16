@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-public class TempFile {
+public class FileUtils {
     public static Path createTempFile(String prefix, String suffix) {
         try {
             return Files.createTempFile(prefix, suffix);

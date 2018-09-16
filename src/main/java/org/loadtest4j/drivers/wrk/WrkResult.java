@@ -12,14 +12,12 @@ class WrkResult implements DriverResult {
     private final long ko;
     private final Duration actualDuration;
     private final DriverResponseTime responseTime;
-    private final String reportUrl;
 
-    WrkResult(long ok, long ko, Duration actualDuration, DriverResponseTime responseTime, String reportUrl) {
+    WrkResult(long ok, long ko, Duration actualDuration, DriverResponseTime responseTime) {
         this.ok = ok;
         this.ko = ko;
         this.actualDuration = actualDuration;
         this.responseTime = responseTime;
-        this.reportUrl = reportUrl;
     }
 
     @Override
@@ -44,6 +42,6 @@ class WrkResult implements DriverResult {
 
     @Override
     public Optional<String> getReportUrl() {
-        return Optional.of(reportUrl);
+        return Optional.empty();
     }
 }

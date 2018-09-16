@@ -9,10 +9,11 @@ import org.loadtest4j.drivers.wrk.dto.*;
 import org.loadtest4j.drivers.wrk.utils.*;
 import org.loadtest4j.drivers.wrk.utils.Process;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
@@ -47,9 +48,7 @@ class Wrk implements Driver {
 
         final Path input = createInput(requests);
 
-        final Path report = runWrkViaShell(input);
-
-        return toDriverResult(report.toUri());
+        return runWrkViaShell(input);
     }
 
     private static <T> void validateNotEmpty(Collection<T> requests) {
@@ -61,15 +60,13 @@ class Wrk implements Driver {
     private static Path createInput(List<DriverRequest> requests) {
         final List<Req> wrkRequests = wrkRequests(requests);
         final Input input = new Input(wrkRequests);
-        final Path inputPath = TempFile.createTempFile("loadtest4j-wrk", ".json");
+        final Path inputPath = FileUtils.createTempFile("loadtest4j-wrk", ".json");
         Json.serialize(inputPath.toFile(), input);
         return inputPath;
     }
 
-    private Path runWrkViaShell(Path input) {
+    private DriverResult runWrkViaShell(Path input) {
         final Path luaScript = createLuaScript();
-
-        final Path output = TempFile.createTempFile("wrk", ".json");
 
         final List<String> arguments = new ArgumentBuilder()
                 .addNamedArgument("--connections", valueOf(connections))
@@ -91,25 +88,19 @@ class Wrk implements Driver {
             throw new LoadTesterException("Wrk error:\n\n" + error);
         }
 
-        TempFile.copy(process.getStderr(), output);
-
-        return output;
-    }
-
-    private static DriverResult toDriverResult(URI report) {
-        try {
-            return toDriverResult(report.toURL());
-        } catch (MalformedURLException e) {
+        try (Reader reader = new InputStreamReader(process.getStderr(), StandardCharsets.UTF_8)) {
+            return toDriverResult(reader);
+        } catch (IOException e) {
             throw new LoadTesterException(e);
         }
     }
 
-    protected static DriverResult toDriverResult(URL report) {
+    protected static DriverResult toDriverResult(Reader report) {
         final Output output = Json.parse(report, Output.class);
-        return toDriverResult(output, report.toString());
+        return toDriverResult(output);
     }
 
-    private static DriverResult toDriverResult(Output output, String reportUrl) {
+    private static DriverResult toDriverResult(Output output) {
         final Summary summary = output.getSummary();
 
         final Errors errors = summary.getErrors();
@@ -132,13 +123,13 @@ class Wrk implements Driver {
 
         final DriverResponseTime responseTime = new WrkResponseTime(output.getLatency().getPercentiles());
 
-        return new WrkResult(ok, ko, actualDuration, responseTime, reportUrl);
+        return new WrkResult(ok, ko, actualDuration, responseTime);
     }
 
     private static Path createLuaScript() {
         final InputStream scriptStream = Wrk.class.getResourceAsStream("/loadtest4j-wrk.lua");
-        final Path script = TempFile.createTempFile("loadtest4j-wrk", ".lua");
-        TempFile.copy(scriptStream, script);
+        final Path script = FileUtils.createTempFile("loadtest4j-wrk", ".lua");
+        FileUtils.copy(scriptStream, script);
         return script;
     }
 
