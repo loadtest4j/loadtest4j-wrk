@@ -122,6 +122,26 @@ public class WrkTest {
     }
 
     @Test
+    public void testRunWithPostBodyContainingEscapedDoubleQuotes() {
+        // Given
+        final Driver driver = sut();
+        // And
+        final String body = "a \\\"badly escaped\\\" string";
+        // And
+        whenHttp(httpServer).match(post("/pets"), withPostBodyContaining(body)).then(status(HttpStatus.OK_200));
+
+        // When
+        final DriverRequest edgeCaseReq = new DriverRequest(body, Collections.emptyMap(),"POST","/pets", Collections.emptyMap());
+        final List<DriverRequest> requests = Collections.singletonList(edgeCaseReq);
+        final DriverResult result = driver.run(requests);
+
+        // Then
+        DriverResultAssert.assertThat(result)
+                .hasOkGreaterThan(0)
+                .hasKo(0);
+    }
+
+    @Test
     public void testRunWithEdgeCaseRequest() {
         // Given
         final Driver driver = sut();
