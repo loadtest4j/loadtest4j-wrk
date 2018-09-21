@@ -14,7 +14,6 @@ Wrk driver for loadtest4j.
     <dependency>
         <groupId>org.loadtest4j.drivers</groupId>
         <artifactId>loadtest4j-wrk</artifactId>
-        <version>[version]</version>
         <scope>test</scope>
     </dependency>   
     ```
