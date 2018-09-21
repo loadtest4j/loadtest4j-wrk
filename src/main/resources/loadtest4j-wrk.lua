@@ -24,7 +24,6 @@ end
 done = function(summary, latency, requests)
     local json = {
         ["summary"] = {
-            ["bytes"] = summary.bytes,
             ["duration"] = summary.duration,
             ["errors"] = {
                 ["connect"] = summary.errors.connect,
@@ -36,7 +35,6 @@ done = function(summary, latency, requests)
             ["requests"] = summary.requests
         },
         ["latency"] = {
-            ["mean"] = latency.mean,
             ["percentiles"] = {},
             ["stdev"] = latency.stdev
         }
