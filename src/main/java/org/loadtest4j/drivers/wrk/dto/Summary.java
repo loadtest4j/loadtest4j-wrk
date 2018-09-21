@@ -1,9 +1,7 @@
 package org.loadtest4j.drivers.wrk.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Summary {
     @JsonProperty
     private long duration;
