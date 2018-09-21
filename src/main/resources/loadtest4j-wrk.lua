@@ -22,242 +22,34 @@ end
 -- Writes wrk's output in a machine-readable JSON format.
 -- The JSON object mimics the structure of the three argument objects as closely as possible.
 done = function(summary, latency, requests)
-    local json = string.format([[
-{
-    "summary": {
-        "bytes": "%d",
-        "duration": "%d",
-        "errors": {
-            "connect": "%d",
-            "read": "%d",
-            "status": "%d",
-            "timeout": "%d",
-            "write": "%d"
+    local json = {
+        ["summary"] = {
+            ["bytes"] = summary.bytes,
+            ["duration"] = summary.duration,
+            ["errors"] = {
+                ["connect"] = summary.errors.connect,
+                ["read"] = summary.errors.read,
+                ["status"] = summary.errors.status,
+                ["timeout"] = summary.errors.timeout,
+                ["write"] = summary.errors.write
+            },
+            ["requests"] = summary.requests
         },
-        "requests": "%d"
-    },
-    "latency": {
-        "mean": "%d",
-        "percentiles": {
-            "0": "%d",
-            "1": "%d",
-            "2": "%d",
-            "3": "%d",
-            "4": "%d",
-            "5": "%d",
-            "6": "%d",
-            "7": "%d",
-            "8": "%d",
-            "9": "%d",
-            "10": "%d",
-            "11": "%d",
-            "12": "%d",
-            "13": "%d",
-            "14": "%d",
-            "15": "%d",
-            "16": "%d",
-            "17": "%d",
-            "18": "%d",
-            "19": "%d",
-            "20": "%d",
-            "21": "%d",
-            "22": "%d",
-            "23": "%d",
-            "24": "%d",
-            "25": "%d",
-            "26": "%d",
-            "27": "%d",
-            "28": "%d",
-            "29": "%d",
-            "30": "%d",
-            "31": "%d",
-            "32": "%d",
-            "33": "%d",
-            "34": "%d",
-            "35": "%d",
-            "36": "%d",
-            "37": "%d",
-            "38": "%d",
-            "39": "%d",
-            "40": "%d",
-            "41": "%d",
-            "42": "%d",
-            "43": "%d",
-            "44": "%d",
-            "45": "%d",
-            "46": "%d",
-            "47": "%d",
-            "48": "%d",
-            "49": "%d",
-            "50": "%d",
-            "51": "%d",
-            "52": "%d",
-            "53": "%d",
-            "54": "%d",
-            "55": "%d",
-            "56": "%d",
-            "57": "%d",
-            "58": "%d",
-            "59": "%d",
-            "60": "%d",
-            "61": "%d",
-            "62": "%d",
-            "63": "%d",
-            "64": "%d",
-            "65": "%d",
-            "66": "%d",
-            "67": "%d",
-            "68": "%d",
-            "69": "%d",
-            "70": "%d",
-            "71": "%d",
-            "72": "%d",
-            "73": "%d",
-            "74": "%d",
-            "75": "%d",
-            "76": "%d",
-            "77": "%d",
-            "78": "%d",
-            "79": "%d",
-            "80": "%d",
-            "81": "%d",
-            "82": "%d",
-            "83": "%d",
-            "84": "%d",
-            "85": "%d",
-            "86": "%d",
-            "87": "%d",
-            "88": "%d",
-            "89": "%d",
-            "90": "%d",
-            "91": "%d",
-            "92": "%d",
-            "93": "%d",
-            "94": "%d",
-            "95": "%d",
-            "96": "%d",
-            "97": "%d",
-            "98": "%d",
-            "99": "%d",
-            "100": "%d"
-        },
-        "stdev": "%d"
+        ["latency"] = {
+            ["mean"] = latency.mean,
+            ["percentiles"] = {},
+            ["stdev"] = latency.stdev
+        }
     }
-}
-    ]],
-    summary.bytes,
-    summary.duration,
-    summary.errors.connect,
-    summary.errors.read,
-    summary.errors.status,
-    summary.errors.timeout,
-    summary.errors.write,
-    summary.requests,
-    latency.mean,
-    latency.min,
-    latency:percentile(1),
-    latency:percentile(2),
-    latency:percentile(3),
-    latency:percentile(4),
-    latency:percentile(5),
-    latency:percentile(6),
-    latency:percentile(7),
-    latency:percentile(8),
-    latency:percentile(9),
-    latency:percentile(10),
-    latency:percentile(11),
-    latency:percentile(12),
-    latency:percentile(13),
-    latency:percentile(14),
-    latency:percentile(15),
-    latency:percentile(16),
-    latency:percentile(17),
-    latency:percentile(18),
-    latency:percentile(19),
-    latency:percentile(20),
-    latency:percentile(21),
-    latency:percentile(22),
-    latency:percentile(23),
-    latency:percentile(24),
-    latency:percentile(25),
-    latency:percentile(26),
-    latency:percentile(27),
-    latency:percentile(28),
-    latency:percentile(29),
-    latency:percentile(30),
-    latency:percentile(31),
-    latency:percentile(32),
-    latency:percentile(33),
-    latency:percentile(34),
-    latency:percentile(35),
-    latency:percentile(36),
-    latency:percentile(37),
-    latency:percentile(38),
-    latency:percentile(39),
-    latency:percentile(40),
-    latency:percentile(41),
-    latency:percentile(42),
-    latency:percentile(43),
-    latency:percentile(44),
-    latency:percentile(45),
-    latency:percentile(46),
-    latency:percentile(47),
-    latency:percentile(48),
-    latency:percentile(49),
-    latency:percentile(50),
-    latency:percentile(51),
-    latency:percentile(52),
-    latency:percentile(53),
-    latency:percentile(54),
-    latency:percentile(55),
-    latency:percentile(56),
-    latency:percentile(57),
-    latency:percentile(58),
-    latency:percentile(59),
-    latency:percentile(60),
-    latency:percentile(61),
-    latency:percentile(62),
-    latency:percentile(63),
-    latency:percentile(64),
-    latency:percentile(65),
-    latency:percentile(66),
-    latency:percentile(67),
-    latency:percentile(68),
-    latency:percentile(69),
-    latency:percentile(70),
-    latency:percentile(71),
-    latency:percentile(72),
-    latency:percentile(73),
-    latency:percentile(74),
-    latency:percentile(75),
-    latency:percentile(76),
-    latency:percentile(77),
-    latency:percentile(78),
-    latency:percentile(79),
-    latency:percentile(80),
-    latency:percentile(81),
-    latency:percentile(82),
-    latency:percentile(83),
-    latency:percentile(84),
-    latency:percentile(85),
-    latency:percentile(86),
-    latency:percentile(87),
-    latency:percentile(88),
-    latency:percentile(89),
-    latency:percentile(90),
-    latency:percentile(91),
-    latency:percentile(92),
-    latency:percentile(93),
-    latency:percentile(94),
-    latency:percentile(95),
-    latency:percentile(96),
-    latency:percentile(97),
-    latency:percentile(98),
-    latency:percentile(99),
-    latency.max,
-    latency.stdev)
 
-    io.stderr:write(json)
+    for p = 0, 99
+    do
+        json["latency"]["percentiles"][p] = latency:percentile(p)
+    end
+    -- p100 is not available so use max instead
+    json["latency"]["percentiles"][100] = latency.max
+
+    io.stderr:write(encodeJson(json))
 end
 
 function readFile(file)
@@ -282,20 +74,10 @@ local json_private = {}     -- Private namespace
 json.EMPTY_ARRAY={}
 json.EMPTY_OBJECT={}
 
-local decode_scanArray
-local decode_scanComment
-local decode_scanConstant
-local decode_scanNumber
-local decode_scanObject
-local decode_scanString
-local decode_scanWhitespace
-local encodeString
-local isArray
-local isEncodable
+-----------------------------------------------------------------------------
+-- MAIN JSON FUNCTIONS
+-----------------------------------------------------------------------------
 
------------------------------------------------------------------------------
--- PUBLIC FUNCTIONS
------------------------------------------------------------------------------
 --- Encodes an arbitrary Lua object / variable.
 -- @param v The Lua object / variable to be JSON encoded.
 -- @return String containing the JSON encoding in internal Lua string format (i.e. not unicode)
@@ -384,21 +166,13 @@ function decodeJson(s, startPos)
 end
 
 -----------------------------------------------------------------------------
--- PRIVATE FUNCTIONS
+-- PRIVATE JSON FUNCTIONS
 -----------------------------------------------------------------------------
 
---- The null function allows one to specify a null value in an associative array (which is otherwise
--- discarded if you set the value with 'nil' in Lua. Simply set t = { first=json.null }
 function json.null()
     return json.null -- so json.null() will also return null ;-)
 end
 
---- Scans an array from JSON into a Lua object
--- startPos begins at the start of the array.
--- Returns the array and the next starting position
--- @param s The string being scanned.
--- @param startPos The starting position for the scan.
--- @return table, int The scanned array as a table, and the position of the next character to scan.
 function decode_scanArray(s,startPos)
     local array = {}	-- The return value
     local stringLen = string.len(s)
@@ -423,10 +197,6 @@ function decode_scanArray(s,startPos)
     until false
 end
 
---- Scans a comment and discards the comment.
--- Returns the position of the next character following the comment.
--- @param string s The JSON string to scan.
--- @param int startPos The starting position of the comment
 function decode_scanComment(s, startPos)
     assert( string.sub(s,startPos,startPos+1)=='/*', "decode_scanComment called but comment does not start at position " .. startPos)
     local endPos = string.find(s,'*/',startPos+2)
@@ -434,12 +204,6 @@ function decode_scanComment(s, startPos)
     return endPos+2
 end
 
---- Scans for given constants: true, false or null
--- Returns the appropriate Lua type, and the position of the next character to read.
--- @param s The string being scanned.
--- @param startPos The position in the string at which to start scanning.
--- @return object, int The object (true, false or nil) and the position at which the next character should be
--- scanned.
 function decode_scanConstant(s, startPos)
     local consts = { ["true"] = true, ["false"] = false, ["null"] = nil }
     local constNames = {"true","false","null"}
@@ -452,14 +216,6 @@ function decode_scanConstant(s, startPos)
     assert(nil, 'Failed to scan constant from string ' .. s .. ' at starting position ' .. startPos)
 end
 
---- Scans a number from the JSON encoded string.
--- (in fact, also is able to scan numeric +- eqns, which is not
--- in the JSON spec.)
--- Returns the number, and the position of the next character
--- after the number.
--- @param s The string being scanned.
--- @param startPos The position at which to start scanning.
--- @return number, int The extracted number and the position of the next character to scan.
 function decode_scanNumber(s,startPos)
     local endPos = startPos+1
     local stringLen = string.len(s)
@@ -475,12 +231,6 @@ function decode_scanNumber(s,startPos)
     return stringEval(), endPos
 end
 
---- Scans a JSON object into a Lua object.
--- startPos begins at the start of the object.
--- Returns the object and the next starting position.
--- @param s The string being scanned.
--- @param startPos The starting position of the scan.
--- @return table, int The scanned object as a table and the position of the next character to scan.
 function decode_scanObject(s,startPos)
     local object = {}
     local stringLen = string.len(s)
@@ -511,9 +261,6 @@ function decode_scanObject(s,startPos)
     until false	-- infinite loop while key-value pairs are found
 end
 
--- START SoniEx2
--- Initialize some things used by decode_scanString
--- You know, for efficiency
 local escapeSequences = {
     ["\\t"] = "\t",
     ["\\f"] = "\f",
@@ -525,16 +272,7 @@ setmetatable(escapeSequences, {__index = function(t,k)
     -- skip "\" aka strip escape
     return string.sub(k,2)
 end})
--- END SoniEx2
 
---- Scans a JSON string from the opening inverted comma or single quote to the
--- end of the string.
--- Returns the string extracted as a Lua string,
--- and the position of the next non-string character
--- (after the closing inverted comma or single quote).
--- @param s The string being scanned.
--- @param startPos The starting position of the scan.
--- @return string, int The extracted string as a Lua string, and the next character to parse.
 function decode_scanString(s,startPos)
     assert(startPos, 'decode_scanString(..) called without start position')
     local startChar = string.sub(s,startPos,startPos)
@@ -582,12 +320,6 @@ function decode_scanString(s,startPos)
     -- END SoniEx2
 end
 
---- Scans a JSON string skipping all whitespace from the current start position.
--- Returns the position of the first non-whitespace character, or nil if the whole end of string is reached.
--- @param s The string being scanned
--- @param startPos The starting position where we should begin removing whitespace.
--- @return int The first position where non-whitespace was encountered, or string.len(s)+1 if the end of string
--- was reached.
 function decode_scanWhitespace(s,startPos)
     local whitespace=" \n\r\t"
     local stringLen = string.len(s)
@@ -596,11 +328,6 @@ function decode_scanWhitespace(s,startPos)
     end
     return startPos
 end
-
---- Encodes a string to be JSON-compatible.
--- This just involves back-quoting inverted commas, back-quotes and newlines, I think ;-)
--- @param s The string to return as a JSON encoded (i.e. backquoted string)
--- @return The string appropriately escaped.
 
 local escapeList = {
     ['"']  = '\\"',
@@ -618,14 +345,6 @@ function json_private.encodeString(s)
     return s:gsub(".", function(c) return escapeList[c] end) -- SoniEx2: 5.0 compat
 end
 
--- Determines whether the given Lua type is an array or a table / dictionary.
--- We consider any table an array if it has indexes 1..n for its n items, and no
--- other data in the table.
--- I think this method is currently a little 'flaky', but can't think of a good way around it yet...
--- @param t The table to evaluate as an array
--- @return boolean, number True if the table can be represented as an array, false otherwise. If true,
--- the second returned value is the maximum
--- number of indexed elements in the array.
 function isArray(t)
     -- Next we count all the elements, ensuring that any non-indexed elements are not-encodable
     -- (with the possible exception of 'n')
@@ -648,11 +367,6 @@ function isArray(t)
     return true, maxIndex
 end
 
---- Determines whether the given Lua object / table / variable can be JSON encoded. The only
--- types that are JSON encodable are: string, boolean, number, nil, table and json.null.
--- In this implementation, all other types are ignored.
--- @param o The object to examine.
--- @return boolean True if the object should be JSON encoded, false if it should be ignored.
 function isEncodable(o)
     local t = type(o)
     return (t=='string' or t=='boolean' or t=='number' or t=='nil' or t=='table') or
