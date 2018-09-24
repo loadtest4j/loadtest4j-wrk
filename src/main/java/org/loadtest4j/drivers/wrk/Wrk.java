@@ -81,6 +81,13 @@ class Wrk implements Driver {
 
         final Process process = new Shell().start(command);
 
+        final DriverResult driverResult;
+        try (Reader reader = new InputStreamReader(process.getStderr(), StandardCharsets.UTF_8)) {
+            driverResult = toDriverResult(reader);
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
+
         final int exitStatus = process.waitFor();
 
         if (exitStatus != 0) {
@@ -88,11 +95,7 @@ class Wrk implements Driver {
             throw new LoadTesterException("Wrk error:\n\n" + error);
         }
 
-        try (Reader reader = new InputStreamReader(process.getStderr(), StandardCharsets.UTF_8)) {
-            return toDriverResult(reader);
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
+        return driverResult;
     }
 
     protected static DriverResult toDriverResult(Reader report) {

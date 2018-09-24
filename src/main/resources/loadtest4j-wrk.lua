@@ -40,7 +40,8 @@ done = function(summary, latency, requests)
         }
     }
 
-    for p = 0, 99
+    local granularity = 0.1
+    for p = 0, 100 - granularity, granularity
     do
         json["latency"]["percentiles"][p] = latency:percentile(p)
     end
