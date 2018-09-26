@@ -61,7 +61,11 @@ class Wrk implements Driver {
         final List<Req> wrkRequests = wrkRequests(requests);
         final Input input = new Input(wrkRequests);
         final Path inputPath = FileUtils.createTempFile("loadtest4j-wrk", ".json");
-        Json.serialize(inputPath.toFile(), input);
+        try {
+            Json.serialize(inputPath.toFile(), input);
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
         return inputPath;
     }
 
@@ -85,20 +89,20 @@ class Wrk implements Driver {
         try (Reader reader = new InputStreamReader(process.getStderr(), StandardCharsets.UTF_8)) {
             driverResult = toDriverResult(reader);
         } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
+            final int exitStatus = process.waitFor();
 
-        final int exitStatus = process.waitFor();
-
-        if (exitStatus != 0) {
-            final String error = StreamReader.streamToString(process.getStderr());
-            throw new LoadTesterException("Wrk error:\n\n" + error);
+            if (exitStatus != 0) {
+                final String error = StreamReader.streamToString(process.getStderr());
+                throw new LoadTesterException("Wrk error:\n\n" + error);
+            } else {
+                throw new LoadTesterException(e);
+            }
         }
 
         return driverResult;
     }
 
-    protected static DriverResult toDriverResult(Reader report) {
+    protected static DriverResult toDriverResult(Reader report) throws IOException {
         final Output output = Json.parse(report, Output.class);
         return toDriverResult(output);
     }

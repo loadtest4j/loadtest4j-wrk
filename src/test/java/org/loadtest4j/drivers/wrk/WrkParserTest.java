@@ -2,7 +2,6 @@ package org.loadtest4j.drivers.wrk;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.loadtest4j.LoadTesterException;
 import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.junit.UnitTest;
 
@@ -59,7 +58,7 @@ public class WrkParserTest {
                 .hasOk(7);
     }
 
-    @Test(expected = LoadTesterException.class)
+    @Test(expected = RuntimeException.class)
     public void testInvalidReport() {
         driverResult("invalid.json");
     }

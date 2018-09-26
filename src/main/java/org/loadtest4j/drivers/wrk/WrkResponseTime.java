@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 class WrkResponseTime implements DriverResponseTime {
 
-    private static final int DECIMAL_PLACES = 5;
+    private static final int DECIMAL_PLACES = 3;
 
     private final TreeMap<BigDecimal, Long> percentiles;
 

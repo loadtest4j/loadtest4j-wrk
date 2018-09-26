@@ -185,7 +185,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithBrokenDriver() {
+    public void testRunWithInvalidHost() {
         // Given
         final Driver driver = new Wrk(1, EXPECTED_DURATION, "wrk", 1, "http://localhost:1");
 

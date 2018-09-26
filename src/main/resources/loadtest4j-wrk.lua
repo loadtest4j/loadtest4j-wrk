@@ -40,15 +40,29 @@ done = function(summary, latency, requests)
         }
     }
 
-    local granularity = 0.1
-    for p = 0, 100 - granularity, granularity
+    -- WARNING: decimalPlaces has a connascence with granularity. If you change one you MUST change the other.
+    local granularity = 0.001
+    local decimalPlaces = 3
+
+    for p = 0, 100, granularity
     do
-        json["latency"]["percentiles"][p] = latency:percentile(p)
+        -- We must round to the desired decimal places to stop p losing accuracy (e.g. the p95.9 becomes p95.8999999999)
+        local roundedP = round(p, decimalPlaces)
+        json["latency"]["percentiles"][roundedP] = latency:percentile(roundedP)
     end
+
     -- p100 is not available so use max instead
     json["latency"]["percentiles"][100] = latency.max
 
     io.stderr:write(encodeJson(json))
+end
+
+-- From https://stackoverflow.com/a/37792884/1475135
+function round(x, n)
+    n = math.pow(10, n)
+    x = x * n
+    if x >= 0 then x = math.floor(x + 0.5) else x = math.ceil(x - 0.5) end
+    return x / n
 end
 
 function readFile(file)

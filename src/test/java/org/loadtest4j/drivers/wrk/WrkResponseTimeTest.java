@@ -30,26 +30,26 @@ public class WrkResponseTimeTest {
     }
 
     @Test
-    public void testGetDecimalPercentileAt5DecimalPlaces() {
-        final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.50001"), 1000L));
+    public void testGetDecimalPercentileAt3DecimalPlaces() {
+        final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.501"), 1000L));
 
-        assertThat(responseTime.getDoublePercentile(50.50001)).isEqualTo(Duration.ofMillis(1));
+        assertThat(responseTime.getDoublePercentile(50.501)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
     public void testGetDecimalPercentileWithTrailingZeroes() {
-        final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.5"), 1000L, bd("50.50001"), 3000L));
+        final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.5"), 1000L, bd("50.501"), 3000L));
 
-        assertThat(responseTime.getDoublePercentile(50.50000)).isEqualTo(Duration.ofMillis(1));
+        assertThat(responseTime.getDoublePercentile(50.500)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetDecimalPercentileBeyond5DecimalPlacesFails() {
-        final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.00000"), 1000L, bd("50.00001"), 3000L));
+    public void testGetDecimalPercentileBeyond3DecimalPlacesFails() {
+        final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.000"), 1000L, bd("50.001"), 3000L));
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> responseTime.getDoublePercentile(50.000005))
-                .withMessage("The Wrk driver only supports percentile queries up to 5 decimal places.");
+                .withMessage("The Wrk driver only supports percentile queries up to 3 decimal places.");
     }
 
     @Test
@@ -57,7 +57,7 @@ public class WrkResponseTimeTest {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.4"), 1000L, bd("50.6"), 3000L));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> responseTime.getDoublePercentile(50.40001))
+                .isThrownBy(() -> responseTime.getDoublePercentile(50.401))
                 .withMessage("The Wrk driver could not find a response time value for that percentile.");
     }
 
