@@ -4,7 +4,6 @@ import org.loadtest4j.driver.DriverResponseTime;
 import org.loadtest4j.driver.DriverResult;
 
 import java.time.Duration;
-import java.util.Optional;
 
 class WrkResult implements DriverResult {
 
@@ -38,10 +37,5 @@ class WrkResult implements DriverResult {
     @Override
     public DriverResponseTime getResponseTime() {
         return responseTime;
-    }
-
-    @Override
-    public Optional<String> getReportUrl() {
-        return Optional.empty();
     }
 }

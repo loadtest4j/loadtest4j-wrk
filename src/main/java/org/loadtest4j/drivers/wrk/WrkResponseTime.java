@@ -17,11 +17,7 @@ class WrkResponseTime implements DriverResponseTime {
     }
 
     @Override
-    public Duration getPercentile(int i) {
-        return getDoublePercentile((double) i);
-    }
-
-    Duration getDoublePercentile(double i) {
+    public Duration getPercentile(double i) {
         if (i < 0 || i > 100) {
             throw new IllegalArgumentException("A percentile must be between 0 and 100");
         }

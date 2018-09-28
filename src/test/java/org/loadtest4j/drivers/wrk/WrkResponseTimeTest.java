@@ -26,21 +26,21 @@ public class WrkResponseTimeTest {
     public void testGetDecimalPercentile() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.5"), 1000L));
 
-        assertThat(responseTime.getDoublePercentile(50.5)).isEqualTo(Duration.ofMillis(1));
+        assertThat(responseTime.getPercentile(50.5)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
     public void testGetDecimalPercentileAt3DecimalPlaces() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.501"), 1000L));
 
-        assertThat(responseTime.getDoublePercentile(50.501)).isEqualTo(Duration.ofMillis(1));
+        assertThat(responseTime.getPercentile(50.501)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
     public void testGetDecimalPercentileWithTrailingZeroes() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.5"), 1000L, bd("50.501"), 3000L));
 
-        assertThat(responseTime.getDoublePercentile(50.500)).isEqualTo(Duration.ofMillis(1));
+        assertThat(responseTime.getPercentile(50.500)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class WrkResponseTimeTest {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.000"), 1000L, bd("50.001"), 3000L));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> responseTime.getDoublePercentile(50.000005))
+                .isThrownBy(() -> responseTime.getPercentile(50.000005))
                 .withMessage("The Wrk driver only supports percentile queries up to 3 decimal places.");
     }
 
@@ -57,7 +57,7 @@ public class WrkResponseTimeTest {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.4"), 1000L, bd("50.6"), 3000L));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> responseTime.getDoublePercentile(50.401))
+                .isThrownBy(() -> responseTime.getPercentile(50.401))
                 .withMessage("The Wrk driver could not find a response time value for that percentile.");
     }
 

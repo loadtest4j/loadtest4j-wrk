@@ -33,8 +33,7 @@ public class WrkParserTest {
         assertThat(driverResult("report.json"))
                 .hasKo(0)
                 .hasOk(1143)
-                .hasResponseTimePercentile(73, Duration.ofMillis(1))
-                .hasNoReportUrl();
+                .hasResponseTimePercentile(73, Duration.ofMillis(1));
     }
 
     @Test
