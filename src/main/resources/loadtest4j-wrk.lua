@@ -54,7 +54,18 @@ done = function(summary, latency, requests)
     -- p100 is not available so use max instead
     json["latency"]["percentiles"][100] = latency.max
 
-    io.stderr:write(encodeJson(json))
+    printReport(encodeJson(json))
+end
+
+function printReport(report)
+    local outputFile = os.getenv("WRK_OUTPUT")
+    if outputFile == nil then
+        io.stderr:write(report)
+    else
+        local fho, _ = io.open(outputFile, "w")
+        fho:write(report)
+        fho:close()
+    end
 end
 
 -- From https://stackoverflow.com/a/37792884/1475135

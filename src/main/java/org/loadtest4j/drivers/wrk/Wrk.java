@@ -9,14 +9,12 @@ import org.loadtest4j.drivers.wrk.dto.*;
 import org.loadtest4j.drivers.wrk.utils.*;
 import org.loadtest4j.drivers.wrk.utils.Process;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,6 +69,10 @@ class Wrk implements Driver {
 
     private DriverResult runWrkViaShell(Path input) {
         final Path luaScript = createLuaScript();
+        final Path luaOutput = FileUtils.createTempFile("loadtest4j-output", ".json");
+
+        // FIXME remove
+        System.out.println(luaOutput.toString());
 
         final List<String> arguments = new ArgumentBuilder()
                 .addNamedArgument("--connections", valueOf(connections))
@@ -81,25 +83,35 @@ class Wrk implements Driver {
                 .addArgument(input.toString())
                 .build();
 
-        final Command command = new Command(arguments, executable);
+        final Map<String, String> env = Collections.singletonMap("WRK_OUTPUT", luaOutput.toString());
+
+        final Command command = new Command(arguments, env, executable);
 
         final Process process = new Shell().start(command);
 
-        final DriverResult driverResult;
-        try (Reader reader = new InputStreamReader(process.getStderr(), StandardCharsets.UTF_8)) {
-            driverResult = toDriverResult(reader);
-        } catch (IOException e) {
-            final int exitStatus = process.waitFor();
-
-            if (exitStatus != 0) {
-                final String error = StreamReader.streamToString(process.getStderr());
-                throw new LoadTesterException("Wrk error:\n\n" + error);
-            } else {
-                throw new LoadTesterException(e);
-            }
+        // Reduce sleep/wakeup cycles waiting for process by doing the sleep ourselves
+        try {
+            Thread.sleep(duration.toMillis());
+        } catch (InterruptedException e) {
+            // It was worth a try - just fall back to process.waitFor()
         }
 
-        return driverResult;
+        final int exitStatus = process.waitFor();
+
+        if (exitStatus != 0) {
+            final String error = StreamReader.streamToString(process.getStderr());
+            throw new LoadTesterException("Wrk error:\n\n" + error);
+        }
+
+        try {
+            return toDriverResult(luaOutput.toAbsolutePath());
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
+    }
+
+    private static DriverResult toDriverResult(Path path) throws IOException {
+        return toDriverResult(new InputStreamReader(new FileInputStream(path.toFile()), StandardCharsets.UTF_8));
     }
 
     protected static DriverResult toDriverResult(Reader report) throws IOException {

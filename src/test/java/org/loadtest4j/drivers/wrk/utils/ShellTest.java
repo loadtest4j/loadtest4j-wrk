@@ -14,7 +14,7 @@ public class ShellTest {
     public void testWaitFor() {
         final Shell sut = new Shell();
 
-        final Command command = new Command(Collections.emptyList(), "whoami");
+        final Command command = new Command(Collections.emptyList(), Collections.emptyMap(), "whoami");
         final int exitStatus = sut.start(command).waitFor();
 
         assertThat(exitStatus).isEqualTo(0);

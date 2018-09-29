@@ -13,8 +13,11 @@ public class Shell {
         cmd.add(command.getLaunchPath());
         cmd.addAll(command.getArguments());
 
+        final ProcessBuilder pb = new ProcessBuilder(cmd)
+                .redirectInput(ProcessBuilder.Redirect.PIPE);
+        pb.environment().putAll(command.getEnv());
         try {
-            return new org.loadtest4j.drivers.wrk.utils.Process(new ProcessBuilder(cmd).redirectInput(ProcessBuilder.Redirect.PIPE).start());
+            return new org.loadtest4j.drivers.wrk.utils.Process(pb.start());
         } catch (IOException e) {
             throw new LoadTesterException(e);
         }
