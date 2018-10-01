@@ -5,12 +5,13 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
 public class CommandTest {
-    private final Command command = new Command(Arrays.asList("foo", "bar"), "whoami");
+    private final Command command = new Command(Arrays.asList("foo", "bar"), Collections.singletonMap("foo", "bar"), "whoami");
 
     @Test
     public void testGetLaunchPath() {
@@ -20,5 +21,10 @@ public class CommandTest {
     @Test
     public void testGetArguments() {
         assertThat(command.getArguments()).containsExactly("foo", "bar");
+    }
+
+    @Test
+    public void testGetEnv() {
+        assertThat(command.getEnv()).containsEntry("foo", "bar");
     }
 }

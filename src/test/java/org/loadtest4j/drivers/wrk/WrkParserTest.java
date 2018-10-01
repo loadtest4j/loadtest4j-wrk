@@ -2,7 +2,6 @@ package org.loadtest4j.drivers.wrk;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.loadtest4j.LoadTesterException;
 import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.junit.UnitTest;
 
@@ -34,8 +33,7 @@ public class WrkParserTest {
         assertThat(driverResult("report.json"))
                 .hasKo(0)
                 .hasOk(1143)
-                .hasResponseTimePercentile(73, Duration.ofMillis(1))
-                .hasNoReportUrl();
+                .hasResponseTimePercentile(73, Duration.ofMillis(1));
     }
 
     @Test
@@ -59,7 +57,7 @@ public class WrkParserTest {
                 .hasOk(7);
     }
 
-    @Test(expected = LoadTesterException.class)
+    @Test(expected = RuntimeException.class)
     public void testInvalidReport() {
         driverResult("invalid.json");
     }

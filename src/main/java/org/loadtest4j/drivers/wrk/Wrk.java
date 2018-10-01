@@ -9,14 +9,12 @@ import org.loadtest4j.drivers.wrk.dto.*;
 import org.loadtest4j.drivers.wrk.utils.*;
 import org.loadtest4j.drivers.wrk.utils.Process;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,12 +59,17 @@ class Wrk implements Driver {
         final List<Req> wrkRequests = wrkRequests(requests);
         final Input input = new Input(wrkRequests);
         final Path inputPath = FileUtils.createTempFile("loadtest4j-wrk", ".json");
-        Json.serialize(inputPath.toFile(), input);
+        try {
+            Json.serialize(inputPath.toFile(), input);
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
         return inputPath;
     }
 
     private DriverResult runWrkViaShell(Path input) {
         final Path luaScript = createLuaScript();
+        final Path luaOutput = FileUtils.createTempFile("loadtest4j-output", ".json");
 
         final List<String> arguments = new ArgumentBuilder()
                 .addNamedArgument("--connections", valueOf(connections))
@@ -77,9 +80,18 @@ class Wrk implements Driver {
                 .addArgument(input.toString())
                 .build();
 
-        final Command command = new Command(arguments, executable);
+        final Map<String, String> env = Collections.singletonMap("WRK_OUTPUT", luaOutput.toString());
+
+        final Command command = new Command(arguments, env, executable);
 
         final Process process = new Shell().start(command);
+
+        // Reduce sleep/wakeup cycles waiting for process by doing the sleep ourselves
+        try {
+            Thread.sleep(duration.toMillis());
+        } catch (InterruptedException e) {
+            // It was worth a try - just fall back to process.waitFor()
+        }
 
         final int exitStatus = process.waitFor();
 
@@ -88,14 +100,18 @@ class Wrk implements Driver {
             throw new LoadTesterException("Wrk error:\n\n" + error);
         }
 
-        try (Reader reader = new InputStreamReader(process.getStderr(), StandardCharsets.UTF_8)) {
-            return toDriverResult(reader);
+        try {
+            return toDriverResult(luaOutput.toAbsolutePath());
         } catch (IOException e) {
             throw new LoadTesterException(e);
         }
     }
 
-    protected static DriverResult toDriverResult(Reader report) {
+    private static DriverResult toDriverResult(Path path) throws IOException {
+        return toDriverResult(new InputStreamReader(new FileInputStream(path.toFile()), StandardCharsets.UTF_8));
+    }
+
+    protected static DriverResult toDriverResult(Reader report) throws IOException {
         final Output output = Json.parse(report, Output.class);
         return toDriverResult(output);
     }

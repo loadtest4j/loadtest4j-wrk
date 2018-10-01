@@ -2,24 +2,38 @@ package org.loadtest4j.drivers.wrk;
 
 import org.loadtest4j.driver.DriverResponseTime;
 
+import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.Map;
+import java.util.TreeMap;
 
 class WrkResponseTime implements DriverResponseTime {
 
-    private final Map<Integer, Long> percentiles;
+    private static final int DECIMAL_PLACES = 3;
 
-    WrkResponseTime(Map<Integer, Long> percentiles) {
+    private final TreeMap<BigDecimal, Long> percentiles;
+
+    WrkResponseTime(TreeMap<BigDecimal, Long> percentiles) {
         this.percentiles = percentiles;
     }
 
     @Override
-    public Duration getPercentile(int i) {
+    public Duration getPercentile(double i) {
         if (i < 0 || i > 100) {
             throw new IllegalArgumentException("A percentile must be between 0 and 100");
         }
 
-        final long durationMicroseconds = percentiles.get(i);
+        final BigDecimal decimalI = BigDecimal.valueOf(i);
+
+        if (decimalI.scale() > DECIMAL_PLACES) {
+            throw new IllegalArgumentException(String.format("The Wrk driver only supports percentile queries up to %d decimal places.", DECIMAL_PLACES));
+        }
+
+        final long durationMicroseconds;
+        try {
+            durationMicroseconds = percentiles.get(decimalI);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("The Wrk driver could not find a response time value for that percentile.");
+        }
 
         return Duration.ofNanos(durationMicroseconds * 1000);
     }

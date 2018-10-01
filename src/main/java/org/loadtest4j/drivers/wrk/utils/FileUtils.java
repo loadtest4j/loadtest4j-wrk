@@ -10,11 +10,16 @@ import java.nio.file.StandardCopyOption;
 
 public class FileUtils {
     public static Path createTempFile(String prefix, String suffix) {
+        final Path p;
         try {
-            return Files.createTempFile(prefix, suffix);
+            p = Files.createTempFile(prefix, suffix);
         } catch (IOException e) {
             throw new LoadTesterException(e);
         }
+
+        p.toFile().deleteOnExit();
+
+        return p;
     }
 
     public static void copy(InputStream content, Path target) {
