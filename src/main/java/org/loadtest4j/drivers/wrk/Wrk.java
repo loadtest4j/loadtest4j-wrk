@@ -71,9 +71,6 @@ class Wrk implements Driver {
         final Path luaScript = createLuaScript();
         final Path luaOutput = FileUtils.createTempFile("loadtest4j-output", ".json");
 
-        // FIXME remove
-        System.out.println(luaOutput.toString());
-
         final List<String> arguments = new ArgumentBuilder()
                 .addNamedArgument("--connections", valueOf(connections))
                 .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))

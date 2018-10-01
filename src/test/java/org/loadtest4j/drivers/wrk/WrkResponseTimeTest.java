@@ -48,7 +48,7 @@ public class WrkResponseTimeTest {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.000"), 1000L, bd("50.001"), 3000L));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> responseTime.getPercentile(50.000005))
+                .isThrownBy(() -> responseTime.getPercentile(50.0005))
                 .withMessage("The Wrk driver only supports percentile queries up to 3 decimal places.");
     }
 

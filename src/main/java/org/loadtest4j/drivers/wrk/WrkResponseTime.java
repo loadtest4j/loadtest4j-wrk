@@ -24,7 +24,7 @@ class WrkResponseTime implements DriverResponseTime {
 
         final BigDecimal decimalI = BigDecimal.valueOf(i);
 
-        if (decimalI.scale() > 5) {
+        if (decimalI.scale() > DECIMAL_PLACES) {
             throw new IllegalArgumentException(String.format("The Wrk driver only supports percentile queries up to %d decimal places.", DECIMAL_PLACES));
         }
 
