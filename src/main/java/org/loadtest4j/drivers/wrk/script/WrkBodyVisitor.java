@@ -3,6 +3,7 @@ package org.loadtest4j.drivers.wrk.script;
 import org.loadtest4j.Body;
 import org.loadtest4j.BodyPart;
 import org.loadtest4j.LoadTesterException;
+import org.loadtest4j.drivers.wrk.utils.ContentTypes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,10 +34,17 @@ public class WrkBodyVisitor implements Body.Visitor<String> {
             sb.append(BODY_BOUNDARY)
                     .append(CRLF)
                     .append(contentDisposition)
-                    .append(CRLF)
-                    .append(CRLF)
-                    .append(content)
                     .append(CRLF);
+
+            if (result.contentType != null) {
+                sb.append("Content-Type: ")
+                        .append(result.contentType)
+                        .append(CRLF);
+            }
+
+            sb.append(CRLF)
+            .append(content)
+            .append(CRLF);
         }
         sb.append(BOTTOM_BOUNDARY);
 
@@ -48,7 +56,7 @@ public class WrkBodyVisitor implements Body.Visitor<String> {
         @Override
         public BodyPartVisitorResult stringPart(String name, String content) {
             final String contentDisposition = "Content-Disposition: form-data; name=\"" + name + "\"";
-            return new BodyPartVisitorResult(content, contentDisposition);
+            return new BodyPartVisitorResult(content, contentDisposition, null);
         }
 
         @Override
@@ -56,7 +64,8 @@ public class WrkBodyVisitor implements Body.Visitor<String> {
             final String name = Optional.ofNullable(file.getFileName()).orElseThrow(NullPointerException::new).toString();
             final String contentDisposition = "Content-Disposition: form-data; filename=\"" + name + "\"";
             final String content = readFileToString(file);
-            return new BodyPartVisitorResult(content, contentDisposition);
+            final String contentType = ContentTypes.detect(file);
+            return new BodyPartVisitorResult(content, contentDisposition, contentType);
         }
     }
 
@@ -64,10 +73,12 @@ public class WrkBodyVisitor implements Body.Visitor<String> {
 
         private final String content;
         private final String contentDisposition;
+        private final String contentType;
 
-        private BodyPartVisitorResult(String content, String contentDisposition) {
+        private BodyPartVisitorResult(String content, String contentDisposition, String contentType) {
             this.content = content;
             this.contentDisposition = contentDisposition;
+            this.contentType = contentType;
         }
     }
 

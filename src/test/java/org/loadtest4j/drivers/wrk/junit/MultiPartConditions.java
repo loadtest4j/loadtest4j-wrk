@@ -26,6 +26,8 @@ public final class MultiPartConditions {
             final String body = call.getPostBody();
             return body.contains("Content-Disposition: form-data; filename=\"" + name + "\"" +
                     HTTP_NEW_LINE +
+                    "Content-Type: " + contentType +
+                    HTTP_NEW_LINE +
                     HTTP_NEW_LINE +
                     content);
         });
