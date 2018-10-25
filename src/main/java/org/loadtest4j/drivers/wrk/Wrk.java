@@ -6,6 +6,8 @@ import org.loadtest4j.driver.DriverRequest;
 import org.loadtest4j.driver.DriverResponseTime;
 import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.dto.*;
+import org.loadtest4j.drivers.wrk.script.WrkBodyVisitor;
+import org.loadtest4j.drivers.wrk.script.WrkHeadersVisitor;
 import org.loadtest4j.drivers.wrk.utils.*;
 import org.loadtest4j.drivers.wrk.utils.Process;
 
@@ -156,8 +158,8 @@ class Wrk implements Driver {
     }
 
     private static Req wrkRequest(DriverRequest request) {
-        final String body = request.getBody();
-        final Map<String, String> headers = request.getHeaders();
+        final String body = request.getBody().accept(new WrkBodyVisitor());
+        final Map<String, String> headers = request.getBody().accept(new WrkHeadersVisitor(request.getHeaders()));
         final String method = request.getMethod();
         final String path = request.getPath() + QueryString.fromMap(request.getQueryParams());
 

@@ -34,6 +34,7 @@ Wrk driver for loadtest4j.
 
 4. **Write your load tests** using the standard [LoadTester API](https://github.com/loadtest4j/loadtest4j).
 
+## Limitations
 
-
-
+- The percentile distribution is accurate to 3 decimal places. For example, it can resolve a difference between the 99.998th percentile and the 99.999th percentile, but not a smaller step size.
+- Wrk's design means we have to read files into memory for file uploads. Wrk will break if you give it a large file.
