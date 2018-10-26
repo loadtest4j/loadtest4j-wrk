@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class WrkHeadersVisitor implements Body.Visitor<Map<String, String>> {
+public class WrkHeadersMatcher implements Body.Matcher<Map<String, String>> {
 
     private final Map<String, String> headers;
 
-    public WrkHeadersVisitor(Map<String, String> headers) {
+    public WrkHeadersMatcher(Map<String, String> headers) {
         this.headers = headers;
     }
 
@@ -23,7 +23,7 @@ public class WrkHeadersVisitor implements Body.Visitor<Map<String, String>> {
     }
 
     @Override
-    public Map<String, String> parts(List<BodyPart> body) {
+    public Map<String, String> multipart(List<BodyPart> body) {
         return concatMaps(headers, Collections.singletonMap("Content-Type", "multipart/form-data; boundary=" + MultipartBoundary.STANDARD));
     }
 

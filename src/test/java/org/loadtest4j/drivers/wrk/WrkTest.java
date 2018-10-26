@@ -15,6 +15,7 @@ import org.loadtest4j.LoadTesterException;
 import org.loadtest4j.driver.Driver;
 import org.loadtest4j.driver.DriverRequest;
 import org.loadtest4j.driver.DriverResult;
+import org.loadtest4j.drivers.wrk.junit.DriverRequests;
 import org.loadtest4j.drivers.wrk.junit.DriverResultAssert;
 import org.loadtest4j.drivers.wrk.junit.IntegrationTest;
 import org.loadtest4j.drivers.wrk.junit.MultiPartConditions;

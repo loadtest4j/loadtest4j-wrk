@@ -10,21 +10,21 @@ import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
-public class WrkBodyVisitorTest extends BodyVisitorTest {
+public class WrkBodyMatcherTest extends BodyMatcherTest {
     @Override
     public void testString() {
-        final WrkBodyVisitor visitor = new WrkBodyVisitor();
+        final WrkBodyMatcher matcher = new WrkBodyMatcher();
 
-        final String body = Body.string("foo").accept(visitor);
+        final String body = Body.string("foo").match(matcher);
 
         assertThat(body).isEqualTo("foo");
     }
 
     @Override
     public void testStringPart() {
-        final WrkBodyVisitor visitor = new WrkBodyVisitor();
+        final WrkBodyMatcher matcher = new WrkBodyMatcher();
 
-        final String body = Body.parts(BodyPart.string("foo", "bar")).accept(visitor);
+        final String body = Body.multipart(BodyPart.string("foo", "bar")).match(matcher);
 
         assertThat(body).isEqualTo(m(
                 "--coBUzDU0QjP5Lc8yTgVGwB_j7FIBUJO9U8x",
@@ -39,14 +39,16 @@ public class WrkBodyVisitorTest extends BodyVisitorTest {
 
     @Override
     public void testFilePart() {
-        final WrkBodyVisitor visitor = new WrkBodyVisitor();
+        final WrkBodyMatcher matcher = new WrkBodyMatcher();
 
-        final String body = Body.parts(BodyPart.file(Paths.get("src/test/resources/fixtures/multipart/test.txt"))).accept(visitor);
+        final String body = Body.multipart(BodyPart.file(Paths.get("src/test/resources/fixtures/multipart/test.txt"))).match(matcher);
 
         assertThat(body).isEqualTo(m(
                 "--coBUzDU0QjP5Lc8yTgVGwB_j7FIBUJO9U8x",
                 "\r\n",
                 "Content-Disposition: form-data; filename=\"test.txt\"",
+                "\r\n",
+                "Content-Type: text/plain",
                 "\r\n",
                 "\r\n",
                 "foo",

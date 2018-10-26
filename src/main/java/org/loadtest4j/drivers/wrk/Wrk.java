@@ -6,8 +6,8 @@ import org.loadtest4j.driver.DriverRequest;
 import org.loadtest4j.driver.DriverResponseTime;
 import org.loadtest4j.driver.DriverResult;
 import org.loadtest4j.drivers.wrk.dto.*;
-import org.loadtest4j.drivers.wrk.script.WrkBodyVisitor;
-import org.loadtest4j.drivers.wrk.script.WrkHeadersVisitor;
+import org.loadtest4j.drivers.wrk.script.WrkBodyMatcher;
+import org.loadtest4j.drivers.wrk.script.WrkHeadersMatcher;
 import org.loadtest4j.drivers.wrk.utils.*;
 import org.loadtest4j.drivers.wrk.utils.Process;
 
@@ -113,7 +113,7 @@ class Wrk implements Driver {
         return toDriverResult(new InputStreamReader(new FileInputStream(path.toFile()), StandardCharsets.UTF_8));
     }
 
-    protected static DriverResult toDriverResult(Reader report) throws IOException {
+    static DriverResult toDriverResult(Reader report) throws IOException {
         final Output output = Json.parse(report, Output.class);
         return toDriverResult(output);
     }
@@ -158,8 +158,8 @@ class Wrk implements Driver {
     }
 
     private static Req wrkRequest(DriverRequest request) {
-        final String body = request.getBody().accept(new WrkBodyVisitor());
-        final Map<String, String> headers = request.getBody().accept(new WrkHeadersVisitor(request.getHeaders()));
+        final String body = request.getBody().match(new WrkBodyMatcher());
+        final Map<String, String> headers = request.getBody().match(new WrkHeadersMatcher(request.getHeaders()));
         final String method = request.getMethod();
         final String path = request.getPath() + QueryString.fromMap(request.getQueryParams());
 

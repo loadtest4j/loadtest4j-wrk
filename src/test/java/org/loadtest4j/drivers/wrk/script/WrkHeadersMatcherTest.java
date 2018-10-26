@@ -12,30 +12,30 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(UnitTest.class)
-public class WrkHeadersVisitorTest extends BodyVisitorTest {
+public class WrkHeadersMatcherTest extends BodyMatcherTest {
     @Override
     public void testString() {
-        final WrkHeadersVisitor visitor = new WrkHeadersVisitor(Collections.emptyMap());
+        final WrkHeadersMatcher matcher = new WrkHeadersMatcher(Collections.emptyMap());
 
-        final Map<String, String> headers = Body.string("foo").accept(visitor);
+        final Map<String, String> headers = Body.string("foo").match(matcher);
 
         assertThat(headers).isEmpty();
     }
 
     @Override
     public void testStringPart() {
-        final WrkHeadersVisitor visitor = new WrkHeadersVisitor(Collections.emptyMap());
+        final WrkHeadersMatcher matcher = new WrkHeadersMatcher(Collections.emptyMap());
 
-        final Map<String, String> headers = Body.parts(BodyPart.string("foo", "bar")).accept(visitor);
+        final Map<String, String> headers = Body.multipart(BodyPart.string("foo", "bar")).match(matcher);
 
         assertThat(headers).containsEntry("Content-Type", "multipart/form-data; boundary=coBUzDU0QjP5Lc8yTgVGwB_j7FIBUJO9U8x");
     }
 
     @Override
     public void testFilePart() {
-        final WrkHeadersVisitor visitor = new WrkHeadersVisitor(Collections.emptyMap());
+        final WrkHeadersMatcher matcher = new WrkHeadersMatcher(Collections.emptyMap());
 
-        final Map<String, String> headers = Body.parts(BodyPart.file(Paths.get("/tmp/foo.txt"))).accept(visitor);
+        final Map<String, String> headers = Body.multipart(BodyPart.file(Paths.get("/tmp/foo.txt"))).match(matcher);
 
         assertThat(headers).containsEntry("Content-Type", "multipart/form-data; boundary=coBUzDU0QjP5Lc8yTgVGwB_j7FIBUJO9U8x");
     }

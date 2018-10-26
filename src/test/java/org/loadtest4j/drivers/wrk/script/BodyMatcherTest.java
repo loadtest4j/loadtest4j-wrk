@@ -2,7 +2,7 @@ package org.loadtest4j.drivers.wrk.script;
 
 import org.junit.Test;
 
-public abstract class BodyVisitorTest {
+public abstract class BodyMatcherTest {
     @Test
     public abstract void testString();
 

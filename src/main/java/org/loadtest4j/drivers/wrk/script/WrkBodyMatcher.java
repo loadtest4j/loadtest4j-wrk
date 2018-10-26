@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-public class WrkBodyVisitor implements Body.Visitor<String> {
+public class WrkBodyMatcher implements Body.Matcher<String> {
 
     private static final String BODY_BOUNDARY = "--" + MultipartBoundary.STANDARD;
     private static final String CRLF = "\r\n";
@@ -24,10 +24,10 @@ public class WrkBodyVisitor implements Body.Visitor<String> {
     }
 
     @Override
-    public String parts(List<BodyPart> body) {
+    public String multipart(List<BodyPart> body) {
         final StringBuilder sb = new StringBuilder();
         for (BodyPart bodyPart: body) {
-            final BodyPartVisitorResult result = bodyPart.accept(new WrkBodyPartVisitor());
+            final BodyPartMatcherResult result = bodyPart.match(new WrkBodyPartMatcher());
             final String contentDisposition = result.contentDisposition;
             final String content = result.content;
 
@@ -51,31 +51,31 @@ public class WrkBodyVisitor implements Body.Visitor<String> {
         return sb.toString();
     }
 
-    private static class WrkBodyPartVisitor implements BodyPart.Visitor<BodyPartVisitorResult> {
+    private static class WrkBodyPartMatcher implements BodyPart.Matcher<BodyPartMatcherResult> {
 
         @Override
-        public BodyPartVisitorResult stringPart(String name, String content) {
+        public BodyPartMatcherResult stringPart(String name, String content) {
             final String contentDisposition = "Content-Disposition: form-data; name=\"" + name + "\"";
-            return new BodyPartVisitorResult(content, contentDisposition, null);
+            return new BodyPartMatcherResult(content, contentDisposition, null);
         }
 
         @Override
-        public BodyPartVisitorResult filePart(Path file) {
+        public BodyPartMatcherResult filePart(Path file) {
             final String name = Optional.ofNullable(file.getFileName()).orElseThrow(NullPointerException::new).toString();
             final String contentDisposition = "Content-Disposition: form-data; filename=\"" + name + "\"";
             final String content = readFileToString(file);
             final String contentType = ContentTypes.detect(file);
-            return new BodyPartVisitorResult(content, contentDisposition, contentType);
+            return new BodyPartMatcherResult(content, contentDisposition, contentType);
         }
     }
 
-    private static class BodyPartVisitorResult {
+    private static class BodyPartMatcherResult {
 
         private final String content;
         private final String contentDisposition;
         private final String contentType;
 
-        private BodyPartVisitorResult(String content, String contentDisposition, String contentType) {
+        private BodyPartMatcherResult(String content, String contentDisposition, String contentType) {
             this.content = content;
             this.contentDisposition = contentDisposition;
             this.contentType = contentType;
