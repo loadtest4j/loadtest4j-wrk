@@ -4,11 +4,11 @@ import org.junit.Test;
 
 public abstract class BodyMatcherTest {
     @Test
-    public abstract void testString();
+    public abstract void shouldMatchOnString();
 
     @Test
-    public abstract void testStringPart();
+    public abstract void shouldMatchOnStringPart();
 
     @Test
-    public abstract void testFilePart();
+    public abstract void shouldMatchOnFilePart();
 }

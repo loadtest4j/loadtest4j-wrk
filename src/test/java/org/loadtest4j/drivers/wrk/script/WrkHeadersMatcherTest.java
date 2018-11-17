@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(UnitTest.class)
 public class WrkHeadersMatcherTest extends BodyMatcherTest {
     @Override
-    public void testString() {
+    public void shouldMatchOnString() {
         final WrkHeadersMatcher matcher = new WrkHeadersMatcher(Collections.emptyMap());
 
         final Map<String, String> headers = Body.string("foo").match(matcher);
@@ -23,7 +23,7 @@ public class WrkHeadersMatcherTest extends BodyMatcherTest {
     }
 
     @Override
-    public void testStringPart() {
+    public void shouldMatchOnStringPart() {
         final WrkHeadersMatcher matcher = new WrkHeadersMatcher(Collections.emptyMap());
 
         final Map<String, String> headers = Body.multipart(BodyPart.string("foo", "bar")).match(matcher);
@@ -32,7 +32,7 @@ public class WrkHeadersMatcherTest extends BodyMatcherTest {
     }
 
     @Override
-    public void testFilePart() {
+    public void shouldMatchOnFilePart() {
         final WrkHeadersMatcher matcher = new WrkHeadersMatcher(Collections.emptyMap());
 
         final Map<String, String> headers = Body.multipart(BodyPart.file(Paths.get("/tmp/foo.txt"))).match(matcher);

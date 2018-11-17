@@ -16,35 +16,35 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class WrkResponseTimeTest {
 
     @Test
-    public void testGetPercentile() {
+    public void shouldGetPercentile() {
         final DriverResponseTime responseTime = new WrkResponseTime(mapOf(bd("50"), 1000L));
 
         assertThat(responseTime.getPercentile(50)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetDecimalPercentile() {
+    public void shouldGetDecimalPercentile() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.5"), 1000L));
 
         assertThat(responseTime.getPercentile(50.5)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetDecimalPercentileAt3DecimalPlaces() {
+    public void shouldGetDecimalPercentileAt3DecimalPlaces() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.501"), 1000L));
 
         assertThat(responseTime.getPercentile(50.501)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetDecimalPercentileWithTrailingZeroes() {
+    public void shouldGetDecimalPercentileWithTrailingZeroes() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.5"), 1000L, bd("50.501"), 3000L));
 
         assertThat(responseTime.getPercentile(50.500)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetDecimalPercentileBeyond3DecimalPlacesFails() {
+    public void shouldNotGetDecimalPercentileBeyond3DecimalPlaces() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.000"), 1000L, bd("50.001"), 3000L));
 
         assertThatIllegalArgumentException()
@@ -53,7 +53,7 @@ public class WrkResponseTimeTest {
     }
 
     @Test
-    public void testGetMissingDecimalPercentileFails() {
+    public void shouldNotGetMissingDecimalPercentile() {
         final WrkResponseTime responseTime = new WrkResponseTime(mapOf(bd("50.4"), 1000L, bd("50.6"), 3000L));
 
         assertThatIllegalArgumentException()
@@ -62,21 +62,21 @@ public class WrkResponseTimeTest {
     }
 
     @Test
-    public void testGetMaxPercentile() {
+    public void shouldGetMaxPercentile() {
         final DriverResponseTime responseTime = new WrkResponseTime(mapOf(bd("100"), 1000L));
 
         assertThat(responseTime.getPercentile(100)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetMinPercentile() {
+    public void shouldGetMinPercentile() {
         final DriverResponseTime responseTime = new WrkResponseTime(mapOf(bd("0"), 1000L));
 
         assertThat(responseTime.getPercentile(0)).isEqualTo(Duration.ofMillis(1));
     }
 
     @Test
-    public void testGetTooLowPercentileFails() {
+    public void shouldNotGetTooLowPercentile() {
         final DriverResponseTime responseTime = new WrkResponseTime(mapOf(bd("-1"), 1000L));
 
         assertThatIllegalArgumentException()
@@ -85,7 +85,7 @@ public class WrkResponseTimeTest {
     }
 
     @Test
-    public void testGetTooHighPercentileFails() {
+    public void shouldNotGetTooHighPercentile() {
         final DriverResponseTime responseTime = new WrkResponseTime(mapOf(bd("101"), 1000L));
 
         assertThatIllegalArgumentException()
@@ -94,7 +94,7 @@ public class WrkResponseTimeTest {
     }
 
     @Test
-    public void testGetMissingPercentileFails() {
+    public void shouldNotGetMissingPercentile() {
         final DriverResponseTime responseTime = new WrkResponseTime(emptyMap());
 
         assertThatIllegalArgumentException()

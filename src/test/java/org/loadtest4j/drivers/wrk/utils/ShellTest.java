@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(IntegrationTest.class)
 public class ShellTest {
     @Test
-    public void testWaitFor() {
+    public void shouldWaitForCommandAndReturnExitStatus() {
         final Shell sut = new Shell();
 
         final Command command = new Command(Collections.emptyList(), Collections.emptyMap(), "whoami");

@@ -85,7 +85,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRun()  {
+    public void shouldRun()  {
         // Given
         final Driver driver = sut();
         // And
@@ -104,7 +104,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithMultipleRequests() {
+    public void shouldRunWithMultipleRequests() {
         // Given
         final Driver driver = sut();
         // And
@@ -123,7 +123,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithJsonPost() {
+    public void shouldRunWithJsonPost() {
         // Given
         final Driver driver = sut();
         // And
@@ -144,7 +144,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithPostBodyContainingEscapedDoubleQuotes() {
+    public void shouldRunWithPostBodyContainingEscapedDoubleQuotes() {
         // Given
         final Driver driver = sut();
         // And
@@ -163,7 +163,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithEdgeCaseRequest() {
+    public void shouldRunWithEdgeCaseRequest() {
         // Given
         final Driver driver = sut();
         // And
@@ -187,7 +187,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithErrors()  {
+    public void shouldRunAndReportKoRequests()  {
         // Given
         final Driver driver = sut();
         // And
@@ -206,7 +206,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithInvalidHost() {
+    public void shouldNotRunWithInvalidHost() {
         // Given
         final Driver driver = new Wrk(1, EXPECTED_DURATION, "wrk", 1, "http://localhost:1");
 
@@ -221,7 +221,7 @@ public class WrkTest {
 
 
     @Test
-    public void testRunWithNoRequests() {
+    public void shouldNotRunWithNoRequests() {
         // Given
         final Driver driver = sut();
 
@@ -234,7 +234,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithMultiPartFileUpload() {
+    public void shouldRunWithMultiPartFileUpload() {
         // Given
         final Driver driver = sut();
         // And
@@ -269,7 +269,7 @@ public class WrkTest {
     }
 
     @Test
-    public void testRunWithMultiPartStringUpload() {
+    public void shouldRunWithMultiPartStringUpload() {
         // Given
         final Driver driver = sut();
         // And

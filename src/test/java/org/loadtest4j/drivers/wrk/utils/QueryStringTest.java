@@ -14,14 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class QueryStringTest {
 
     @Test
-    public void testQueryString() {
+    public void shouldMakeQueryString() {
         final String queryString = QueryString.fromMap(Collections.singletonMap("foo", "1"));
 
         assertThat(queryString).isEqualTo("?foo=1");
     }
 
     @Test
-    public void testQueryStringWithMultipleParams() {
+    public void shouldMakeQueryStringWithMultipleParams() {
         final Map<String, String> queryParams = new LinkedHashMap<String, String>() {{
             put("foo", "1");
             put("bar", "2");

@@ -14,17 +14,17 @@ public class CommandTest {
     private final Command command = new Command(Arrays.asList("foo", "bar"), Collections.singletonMap("foo", "bar"), "whoami");
 
     @Test
-    public void testGetLaunchPath() {
+    public void shouldHaveLaunchPath() {
         assertThat(command.getLaunchPath()).isEqualTo("whoami");
     }
 
     @Test
-    public void testGetArguments() {
+    public void shouldHaveArguments() {
         assertThat(command.getArguments()).containsExactly("foo", "bar");
     }
 
     @Test
-    public void testGetEnv() {
+    public void shouldHaveEnv() {
         assertThat(command.getEnv()).containsEntry("foo", "bar");
     }
 }

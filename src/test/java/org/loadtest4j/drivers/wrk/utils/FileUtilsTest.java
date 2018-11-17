@@ -29,14 +29,14 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void testCreate() {
+    public void shouldCreateFile() {
         final Path path = FileUtils.createTempFile("foo", ".json");
 
         assertThat(path.toFile()).exists();
     }
 
     @Test
-    public void testCopy() {
+    public void shouldCopyFile() {
         final Path path = FileUtils.createTempFile("foo", ".json");
 
         FileUtils.copy(file("foo.json"), path);
@@ -45,7 +45,7 @@ public class FileUtilsTest {
     }
 
     @Test(expected = LoadTesterException.class)
-    public void testCopyError() {
+    public void shouldThrowExceptionOnCopyError() {
         final Path path = FileUtils.createTempFile("foo", ".json");
 
         final InputStream closed = closed();
