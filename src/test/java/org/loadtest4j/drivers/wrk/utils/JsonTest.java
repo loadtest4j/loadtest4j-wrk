@@ -23,7 +23,7 @@ public class JsonTest {
     }
 
     @Test
-    public void testRoundTrip() throws IOException {
+    public void shouldRoundTripSuccessfully() throws IOException {
         final Foo input = new Foo();
         input.a = "b";
 
@@ -37,14 +37,14 @@ public class JsonTest {
     }
 
     @Test(expected = IOException.class)
-    public void testParseError() throws IOException {
+    public void shouldThrowExceptionOnParseError() throws IOException {
         try (Reader reader = json("invalid.json")) {
             Json.parse(reader, Foo.class);
         }
     }
 
     @Test(expected = IOException.class)
-    public void testSerializeError() throws IOException {
+    public void shouldThrowExceptionOnSerializeError() throws IOException {
         final Foo foo = new Foo();
 
         File file = FileUtils.createTempFile("foo", ".json").toFile();

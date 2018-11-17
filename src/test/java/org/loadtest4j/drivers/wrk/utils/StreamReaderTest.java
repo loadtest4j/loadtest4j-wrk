@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StreamReaderTest {
 
     @Test
-    public void testRoundTrip() {
+    public void shouldRoundTripSuccessfully() {
         final String input = "foo";
 
         final String output = StreamReader.streamToString(StreamReader.stringToStream(input));

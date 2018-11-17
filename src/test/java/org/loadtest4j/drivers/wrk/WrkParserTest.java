@@ -29,7 +29,7 @@ public class WrkParserTest {
     }
 
     @Test
-    public void testValidReport() {
+    public void shouldParseValidReport() {
         assertThat(driverResult("report.json"))
                 .hasKo(0)
                 .hasOk(1143)
@@ -37,28 +37,28 @@ public class WrkParserTest {
     }
 
     @Test
-    public void testReportWithStatusErrors() {
+    public void shouldParseReportWithStatusErrors() {
         assertThat(driverResult("status_errors.json"))
                 .hasKo(5)
                 .hasOk(3);
     }
 
     @Test
-    public void testReportWithSocketErrors() {
+    public void shouldParseReportWithSocketErrors() {
         assertThat(driverResult("socket_errors.json"))
                 .hasKo(4)
                 .hasOk(8);
     }
 
     @Test
-    public void testReportWithSocketAndStatusErrors() {
+    public void shouldParseReportWithSocketAndStatusErrors() {
         assertThat(driverResult("socket_and_status_errors.json"))
                 .hasKo(5)
                 .hasOk(7);
     }
 
     @Test(expected = RuntimeException.class)
-    public void testInvalidReport() {
+    public void shouldThrowExceptionForInvalidReport() {
         driverResult("invalid.json");
     }
 }

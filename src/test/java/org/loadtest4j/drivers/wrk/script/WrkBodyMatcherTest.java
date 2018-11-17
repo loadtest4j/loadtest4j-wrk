@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(UnitTest.class)
 public class WrkBodyMatcherTest extends BodyMatcherTest {
     @Override
-    public void testString() {
+    public void shouldMatchOnString() {
         final WrkBodyMatcher matcher = new WrkBodyMatcher();
 
         final String body = Body.string("foo").match(matcher);
@@ -21,7 +21,7 @@ public class WrkBodyMatcherTest extends BodyMatcherTest {
     }
 
     @Override
-    public void testStringPart() {
+    public void shouldMatchOnStringPart() {
         final WrkBodyMatcher matcher = new WrkBodyMatcher();
 
         final String body = Body.multipart(BodyPart.string("foo", "bar")).match(matcher);
@@ -38,7 +38,7 @@ public class WrkBodyMatcherTest extends BodyMatcherTest {
     }
 
     @Override
-    public void testFilePart() {
+    public void shouldMatchOnFilePart() {
         final WrkBodyMatcher matcher = new WrkBodyMatcher();
 
         final String body = Body.multipart(BodyPart.file(Paths.get("src/test/resources/fixtures/multipart/test.txt"))).match(matcher);

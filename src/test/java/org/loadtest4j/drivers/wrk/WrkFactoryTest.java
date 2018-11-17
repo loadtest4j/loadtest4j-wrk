@@ -25,7 +25,7 @@ public class WrkFactoryTest {
     }
 
     @Test
-    public void testGetMandatoryProperties() {
+    public void shouldHaveMandatoryProperties() {
         final DriverFactory sut = sut();
 
         final Set<String> mandatoryProperties = sut.getMandatoryProperties();
@@ -34,14 +34,14 @@ public class WrkFactoryTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void testGetMandatoryPropertiesIsImmutable() {
+    public void shouldHaveImmutableMandatoryProperties() {
         final DriverFactory sut = sut();
 
         sut.getMandatoryProperties().add("foobarbaz123");
     }
 
     @Test
-    public void testCreate() {
+    public void shouldCreateDriver() {
         final DriverFactory sut = sut();
 
         final Map<String, String> properties = new HashMap<>();

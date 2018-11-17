@@ -13,14 +13,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @Category(IntegrationTest.class)
 public class ContentTypesTest {
     @Test
-    public void testDetectTypeOfPlainTextFile() {
+    public void shouldDetectTypeOfPlainTextFile() {
         final String type = ContentTypes.detect(Paths.get("src/test/resources/fixtures/multipart/test.txt"));
 
         assertThat(type).isEqualTo("text/plain");
     }
 
     @Test
-    public void testDetectTypeOfNonFileFails() {
+    public void shouldFailToDetectTypeOfNonFile() {
         assertThatExceptionOfType(LoadTesterException.class)
                 .isThrownBy(() -> ContentTypes.detect(Paths.get("src/test/resources/fixtures/multipart/")));
     }

@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(UnitTest.class)
 public class ArgumentBuilderTest {
     @Test
-    public void testAddArgument() {
+    public void shouldAddArgument() {
         final ArgumentBuilder sut = new ArgumentBuilder();
 
         final List<String> args = sut.addArgument("foo").build();
@@ -20,7 +20,7 @@ public class ArgumentBuilderTest {
     }
 
     @Test
-    public void testAddNamedArgument() {
+    public void shouldAddNamedArgument() {
         final ArgumentBuilder sut = new ArgumentBuilder();
 
         final List<String> args = sut.addNamedArgument("--foo", "bar").build();
