@@ -36,7 +36,6 @@ public class WrkBuilderTest {
         assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(2));
         assertThat(wrk.executable).isEqualTo("/tmp/wrk");
         assertThat(wrk.threads).isEqualTo(2);
-        assertThat(wrk.url).isEqualTo("https://example.com");
     }
 
     @Test
