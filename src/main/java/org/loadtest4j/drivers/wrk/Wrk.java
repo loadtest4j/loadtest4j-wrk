@@ -28,11 +28,11 @@ import static java.lang.String.valueOf;
  */
 class Wrk implements Driver {
 
-    private final int connections;
-    private final Duration duration;
-    private final String executable;
-    private final int threads;
-    private final String url;
+    final int connections;
+    final Duration duration;
+    final String executable;
+    final int threads;
+    final String url;
 
     Wrk(int connections, Duration duration, String executable, int threads, String url) {
         this.connections = connections;

@@ -5,11 +5,11 @@ import org.loadtest4j.driver.Driver;
 import java.time.Duration;
 
 public class WrkBuilder {
-    final int connections;
-    final Duration duration;
-    final String executable;
-    final int threads;
-    final String url;
+    private final int connections;
+    private final Duration duration;
+    private final String executable;
+    private final int threads;
+    private final String url;
 
     private WrkBuilder(int connections, Duration duration, String executable, int threads, String url) {
         this.connections = connections;
@@ -19,7 +19,7 @@ public class WrkBuilder {
         this.url = url;
     }
 
-    public static WrkBuilder standard(String url) {
+    public static WrkBuilder withUrl(String url) {
         return new WrkBuilder(1, Duration.ofSeconds(1), "wrk", 1, url);
     }
 

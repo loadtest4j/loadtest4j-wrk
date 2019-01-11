@@ -2,57 +2,56 @@ package org.loadtest4j.drivers.wrk;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.loadtest4j.driver.Driver;
 import org.loadtest4j.drivers.wrk.junit.UnitTest;
 
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 @Category(UnitTest.class)
 public class WrkBuilderTest {
 
-    private final WrkBuilder builder = WrkBuilder.standard("https://example.com");
-
     @Test
     public void shouldHaveDefaultValues() {
-        assertThat(builder.connections).isEqualTo(1);
-        assertThat(builder.duration).isEqualTo(Duration.ofSeconds(1));
-        assertThat(builder.executable).isEqualTo("wrk");
-        assertThat(builder.threads).isEqualTo(1);
-        assertThat(builder.url).isEqualTo("https://example.com");
+        final Wrk wrk = (Wrk) WrkBuilder.withUrl("https://example.com").build();
+
+        assertThat(wrk.connections).isEqualTo(1);
+        assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(1));
+        assertThat(wrk.executable).isEqualTo("wrk");
+        assertThat(wrk.threads).isEqualTo(1);
+        assertThat(wrk.url).isEqualTo("https://example.com");
     }
 
     @Test
-    public void shouldSetConnections() {
-        final WrkBuilder b = builder.withConnections(2);
+    public void shouldSetCustomValues() {
+        final Wrk wrk = (Wrk) WrkBuilder.withUrl("https://example.com")
+                .withConnections(2)
+                .withDuration(Duration.ofSeconds(2))
+                .withExecutable("/tmp/wrk")
+                .withThreads(2)
+                .build();
 
-        assertThat(b.connections).isEqualTo(2);
+        assertThat(wrk.connections).isEqualTo(2);
+        assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(2));
+        assertThat(wrk.executable).isEqualTo("/tmp/wrk");
+        assertThat(wrk.threads).isEqualTo(2);
+        assertThat(wrk.url).isEqualTo("https://example.com");
     }
 
     @Test
-    public void shouldSetDuration() {
-        final WrkBuilder b = builder.withDuration(Duration.ofSeconds(2));
+    public void shouldBeImmutable() {
+        final WrkBuilder builder = WrkBuilder.withUrl("https://example.com");
 
-        assertThat(b.duration).isEqualTo(Duration.ofSeconds(2));
-    }
+        final Driver before = builder.build();
 
-    @Test
-    public void shouldSetExecutable() {
-        final WrkBuilder b = builder.withExecutable("/tmp/wrk");
+        builder.withConnections(2);
+        builder.withDuration(Duration.ofSeconds(2));
+        builder.withExecutable("/tmp/wrk");
+        builder.withThreads(2);
 
-        assertThat(b.executable).isEqualTo("/tmp/wrk");
-    }
+        final Driver after = builder.build();
 
-    @Test
-    public void shouldSetThreads() {
-        final WrkBuilder b = builder.withThreads(2);
-
-        assertThat(b.threads).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldBuild() {
-        fail("implement me");
+        assertThat(after).isEqualToComparingFieldByField(before);
     }
 }
