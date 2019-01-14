@@ -12,36 +12,81 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(UnitTest.class)
 public class WrkBuilderTest {
 
-    @Test
-    public void shouldHaveDefaultValues() {
-        final Wrk wrk = (Wrk) WrkBuilder.withUrl("https://example.com").build();
+    private final WrkBuilder builder = WrkBuilder.withUrl("https://example.com");
 
-        assertThat(wrk.connections).isEqualTo(1);
-        assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(1));
-        assertThat(wrk.executable).isEqualTo("wrk");
-        assertThat(wrk.threads).isEqualTo(1);
+    @Test
+    public void shouldRequireUrl() {
+        final Wrk wrk = (Wrk) builder.build();
+
         assertThat(wrk.url).isEqualTo("https://example.com");
     }
 
     @Test
-    public void shouldSetCustomValues() {
-        final Wrk wrk = (Wrk) WrkBuilder.withUrl("https://example.com")
+    public void shouldSetConnections() {
+        final Wrk wrk = (Wrk) builder
                 .withConnections(2)
-                .withDuration(Duration.ofSeconds(2))
-                .withExecutable("/tmp/wrk")
-                .withThreads(2)
                 .build();
 
         assertThat(wrk.connections).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldSetConnectionsTo1ByDefault() {
+        final Wrk wrk = (Wrk) builder.build();
+
+        assertThat(wrk.connections).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldSetDuration() {
+        final Wrk wrk = (Wrk) builder
+                .withDuration(Duration.ofSeconds(2))
+                .build();
+
         assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(2));
+    }
+
+    @Test
+    public void shouldSetDurationTo1SecondByDefault() {
+        final Wrk wrk = (Wrk) builder.build();
+
+        assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(1));
+    }
+
+    @Test
+    public void shouldSetExecutable() {
+        final Wrk wrk = (Wrk) builder
+                .withExecutable("/tmp/wrk")
+                .build();
+
         assertThat(wrk.executable).isEqualTo("/tmp/wrk");
+    }
+
+    @Test
+    public void shouldSetExecutableToWrkByDefault() {
+        final Wrk wrk = (Wrk) builder.build();
+
+        assertThat(wrk.executable).isEqualTo("wrk");
+    }
+
+    @Test
+    public void shouldSetThreads() {
+        final Wrk wrk = (Wrk) builder
+                .withThreads(2)
+                .build();
+
         assertThat(wrk.threads).isEqualTo(2);
     }
 
     @Test
-    public void shouldBeImmutable() {
-        final WrkBuilder builder = WrkBuilder.withUrl("https://example.com");
+    public void shouldSetThreadsTo1ByDefault() {
+        final Wrk wrk = (Wrk) builder.build();
 
+        assertThat(wrk.threads).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldBeImmutable() {
         final Driver before = builder.build();
 
         builder.withConnections(2);
