@@ -16,85 +16,85 @@ public class WrkBuilderTest {
 
     @Test
     public void shouldRequireUrl() {
-        final Wrk wrk = (Wrk) builder.build();
+        final Wrk wrk = builder.buildDriver();
 
         assertThat(wrk.url).isEqualTo("https://example.com");
     }
 
     @Test
     public void shouldSetConnections() {
-        final Wrk wrk = (Wrk) builder
+        final Wrk wrk = builder
                 .withConnections(2)
-                .build();
+                .buildDriver();
 
         assertThat(wrk.connections).isEqualTo(2);
     }
 
     @Test
     public void shouldSetConnectionsTo1ByDefault() {
-        final Wrk wrk = (Wrk) builder.build();
+        final Wrk wrk = builder.buildDriver();
 
         assertThat(wrk.connections).isEqualTo(1);
     }
 
     @Test
     public void shouldSetDuration() {
-        final Wrk wrk = (Wrk) builder
+        final Wrk wrk = builder
                 .withDuration(Duration.ofSeconds(2))
-                .build();
+                .buildDriver();
 
         assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(2));
     }
 
     @Test
     public void shouldSetDurationTo1SecondByDefault() {
-        final Wrk wrk = (Wrk) builder.build();
+        final Wrk wrk = builder.buildDriver();
 
         assertThat(wrk.duration).isEqualTo(Duration.ofSeconds(1));
     }
 
     @Test
     public void shouldSetExecutable() {
-        final Wrk wrk = (Wrk) builder
+        final Wrk wrk = builder
                 .withExecutable("/tmp/wrk")
-                .build();
+                .buildDriver();
 
         assertThat(wrk.executable).isEqualTo("/tmp/wrk");
     }
 
     @Test
     public void shouldSetExecutableToWrkByDefault() {
-        final Wrk wrk = (Wrk) builder.build();
+        final Wrk wrk = builder.buildDriver();
 
         assertThat(wrk.executable).isEqualTo("wrk");
     }
 
     @Test
     public void shouldSetThreads() {
-        final Wrk wrk = (Wrk) builder
+        final Wrk wrk = builder
                 .withThreads(2)
-                .build();
+                .buildDriver();
 
         assertThat(wrk.threads).isEqualTo(2);
     }
 
     @Test
     public void shouldSetThreadsTo1ByDefault() {
-        final Wrk wrk = (Wrk) builder.build();
+        final Wrk wrk = builder.buildDriver();
 
         assertThat(wrk.threads).isEqualTo(1);
     }
 
     @Test
     public void shouldBeImmutable() {
-        final Driver before = builder.build();
+        final Driver before = builder.buildDriver();
 
         builder.withConnections(2);
         builder.withDuration(Duration.ofSeconds(2));
         builder.withExecutable("/tmp/wrk");
         builder.withThreads(2);
 
-        final Driver after = builder.build();
+        final Driver after = builder.buildDriver();
 
         assertThat(after).isEqualToComparingFieldByField(before);
     }

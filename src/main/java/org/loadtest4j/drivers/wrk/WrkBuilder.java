@@ -1,10 +1,10 @@
 package org.loadtest4j.drivers.wrk;
 
-import org.loadtest4j.driver.Driver;
+import org.loadtest4j.factory.LoadTesterBuilder;
 
 import java.time.Duration;
 
-public class WrkBuilder {
+public class WrkBuilder extends LoadTesterBuilder {
     private final int connections;
     private final Duration duration;
     private final String executable;
@@ -39,7 +39,8 @@ public class WrkBuilder {
         return new WrkBuilder(connections, duration, executable, threads, url);
     }
 
-    public Driver build() {
+    @Override
+    protected Wrk buildDriver() {
         return new Wrk(connections, duration, executable, threads, url);
     }
 }
