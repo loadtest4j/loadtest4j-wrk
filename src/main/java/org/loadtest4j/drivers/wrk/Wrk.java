@@ -12,7 +12,9 @@ import org.loadtest4j.drivers.wrk.utils.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,25 +50,25 @@ class Wrk implements Driver {
     }
 
     private DriverResult runWrkViaShell(List<DriverRequest> requests) {
-        final Path luaInput = createLuaInput(requests);
-        final Path luaScript = createLuaScript();
-        final Path luaOutput = FileUtils.createTempFile("loadtest4j-output", ".json");
-
-        final String[] command = {
-                "wrk",
-                "--connections", String.valueOf(connections),
-                "--duration", String.format("%ds", duration.getSeconds()),
-                "--script", luaScript.toString(),
-                "--threads", String.valueOf(threads),
-                url,
-                luaInput.toString()
-        };
-
-        final ProcessBuilder pb = new ProcessBuilder(command).redirectInput(ProcessBuilder.Redirect.PIPE);
-
-        pb.environment().put("WRK_OUTPUT", luaOutput.toString());
-
         try {
+            final Path luaInput = createLuaInput(requests);
+            final Path luaScript = createLuaScript();
+            final Path luaOutput = createTempFile("loadtest4j-output", ".json");
+
+            final String[] command = {
+                    "wrk",
+                    "--connections", String.valueOf(connections),
+                    "--duration", String.format("%ds", duration.getSeconds()),
+                    "--script", luaScript.toString(),
+                    "--threads", String.valueOf(threads),
+                    url,
+                    luaInput.toString()
+            };
+
+            final ProcessBuilder pb = new ProcessBuilder(command).redirectInput(ProcessBuilder.Redirect.PIPE);
+
+            pb.environment().put("WRK_OUTPUT", luaOutput.toString());
+
             final Process process = pb.start();
 
             // Reduce sleep/wakeup cycles waiting for process by doing the sleep ourselves
@@ -86,15 +88,14 @@ class Wrk implements Driver {
         }
     }
 
-    private static Path createLuaInput(List<DriverRequest> requests) {
+    private static Path createLuaInput(List<DriverRequest> requests) throws IOException {
         final List<Req> wrkRequests = wrkRequests(requests);
         final Input input = new Input(wrkRequests);
-        final Path inputPath = FileUtils.createTempFile("loadtest4j-wrk", ".json");
-        try {
-            Json.serialize(inputPath.toFile(), input);
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
+
+        final Path inputPath = createTempFile("loadtest4j-wrk", ".json");
+
+        Json.serialize(inputPath.toFile(), input);
+
         return inputPath;
     }
 
@@ -133,10 +134,10 @@ class Wrk implements Driver {
         return new WrkResult(ok, ko, actualDuration, responseTime);
     }
 
-    private static Path createLuaScript() {
+    private static Path createLuaScript() throws IOException {
         final InputStream scriptStream = Wrk.class.getResourceAsStream("/loadtest4j-wrk.lua");
-        final Path script = FileUtils.createTempFile("loadtest4j-wrk", ".lua");
-        FileUtils.copy(scriptStream, script);
+        final Path script = createTempFile("loadtest4j-wrk", ".lua");
+        Files.copy(scriptStream, script, StandardCopyOption.REPLACE_EXISTING);
         return script;
     }
 
@@ -153,5 +154,11 @@ class Wrk implements Driver {
         final String path = request.getPath() + QueryString.fromMap(request.getQueryParams());
 
         return new Req(body, headers, method, path);
+    }
+
+    private static Path createTempFile(String prefix, String suffix) throws IOException {
+        final Path p = Files.createTempFile(prefix, suffix);
+        p.toFile().deleteOnExit();
+        return p;
     }
 }
