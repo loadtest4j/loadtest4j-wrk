@@ -135,10 +135,11 @@ class Wrk implements Driver {
     }
 
     private static Path createLuaScript() throws IOException {
-        final InputStream scriptStream = Wrk.class.getResourceAsStream("/loadtest4j-wrk.lua");
-        final Path script = createTempFile("loadtest4j-wrk", ".lua");
-        Files.copy(scriptStream, script, StandardCopyOption.REPLACE_EXISTING);
-        return script;
+        try (InputStream scriptStream = Wrk.class.getResourceAsStream("/loadtest4j-wrk.lua")) {
+            final Path script = createTempFile("loadtest4j-wrk", ".lua");
+            Files.copy(scriptStream, script, StandardCopyOption.REPLACE_EXISTING);
+            return script;
+        }
     }
 
     private static List<Req> wrkRequests(List<DriverRequest> requests) {
