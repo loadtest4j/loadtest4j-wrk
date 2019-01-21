@@ -1,8 +1,10 @@
 package org.loadtest4j.drivers.wrk.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.loadtest4j.drivers.wrk.junit.IntegrationTest;
 
 import java.io.*;
@@ -12,6 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(IntegrationTest.class)
 public class JsonTest {
+
+    @Rule
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private static Reader json(String name) {
         return new InputStreamReader(JsonTest.class.getClassLoader().getResourceAsStream("fixtures/json/" + name), StandardCharsets.UTF_8);
@@ -27,7 +32,7 @@ public class JsonTest {
         final Foo input = new Foo();
         input.a = "b";
 
-        File file = FileUtils.createTempFile("foo", ".json").toFile();
+        final File file = temporaryFolder.newFile("foo.json");
 
         Json.serialize(file, input);
 
@@ -47,7 +52,8 @@ public class JsonTest {
     public void shouldThrowExceptionOnSerializeError() throws IOException {
         final Foo foo = new Foo();
 
-        File file = FileUtils.createTempFile("foo", ".json").toFile();
+        final File file = temporaryFolder.newFile("foo.json");
+
         file.setWritable(false);
 
         Json.serialize(file, foo);

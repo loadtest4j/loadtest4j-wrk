@@ -22,20 +22,15 @@ public class WrkFactory implements DriverFactory {
      * - `duration`
      * - `threads`
      * - `url`
-     *
-     * Optional properties:
-     *
-     * - `executable` (defaults to `wrk`, and is located using the PATH)
      */
     @Override
     public Driver create(Map<String, String> properties) {
         final Duration duration = Duration.ofSeconds(Long.parseLong(properties.get("duration")));
         final int connections = Integer.parseInt(properties.get("connections"));
-        final String executable = properties.getOrDefault("executable", "wrk");
         final int threads = Integer.parseInt(properties.get("threads"));
         final String url = properties.get("url");
 
-        return new Wrk(connections, duration, executable, threads, url);
+        return new Wrk(connections, duration, threads, url);
     }
 
     private static Set<String> setOf(String... values) {

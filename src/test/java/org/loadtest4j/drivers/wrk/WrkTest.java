@@ -80,8 +80,7 @@ public class WrkTest {
     }
 
     private Driver sut() {
-        final String executable = "wrk";
-        return new Wrk(1, EXPECTED_DURATION, executable, 1, getServiceUrl());
+        return new Wrk(1, EXPECTED_DURATION, 1, getServiceUrl());
     }
 
     @Test
@@ -208,7 +207,7 @@ public class WrkTest {
     @Test
     public void shouldNotRunWithInvalidHost() {
         // Given
-        final Driver driver = new Wrk(1, EXPECTED_DURATION, "wrk", 1, "http://localhost:1");
+        final Driver driver = new Wrk(1, EXPECTED_DURATION, 1, "http://localhost:1");
 
         // Expect
         thrown.expect(LoadTesterException.class);
