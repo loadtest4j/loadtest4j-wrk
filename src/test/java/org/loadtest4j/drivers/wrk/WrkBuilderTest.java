@@ -54,15 +54,6 @@ public class WrkBuilderTest {
     }
 
     @Test
-    public void shouldSetExecutable() {
-        final Wrk wrk = builder
-                .withExecutable("/tmp/wrk")
-                .buildDriver();
-
-        assertThat(wrk.executable).isEqualTo("/tmp/wrk");
-    }
-
-    @Test
     public void shouldSetExecutableToWrkByDefault() {
         final Wrk wrk = builder.buildDriver();
 
@@ -91,7 +82,6 @@ public class WrkBuilderTest {
 
         builder.withConnections(2);
         builder.withDuration(Duration.ofSeconds(2));
-        builder.withExecutable("/tmp/wrk");
         builder.withThreads(2);
 
         final Driver after = builder.buildDriver();
