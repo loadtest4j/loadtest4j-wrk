@@ -17,8 +17,6 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.lang.String.valueOf;
-
 /**
  * Runs a load test using the 'wrk' program by Will Glozer (https://github.com/wg/wrk).
  */
@@ -40,9 +38,7 @@ class Wrk implements Driver {
     public DriverResult run(List<DriverRequest> requests) {
         validateNotEmpty(requests);
 
-        final Path input = createInput(requests);
-
-        return runWrkViaShell(input);
+        return runWrkViaShell(requests);
     }
 
     private static <T> void validateNotEmpty(Collection<T> requests) {
@@ -51,35 +47,24 @@ class Wrk implements Driver {
         }
     }
 
-    private static Path createInput(List<DriverRequest> requests) {
-        final List<Req> wrkRequests = wrkRequests(requests);
-        final Input input = new Input(wrkRequests);
-        final Path inputPath = FileUtils.createTempFile("loadtest4j-wrk", ".json");
-        try {
-            Json.serialize(inputPath.toFile(), input);
-        } catch (IOException e) {
-            throw new LoadTesterException(e);
-        }
-        return inputPath;
-    }
-
-    private DriverResult runWrkViaShell(Path input) {
+    private DriverResult runWrkViaShell(List<DriverRequest> requests) {
+        final Path luaInput = createLuaInput(requests);
         final Path luaScript = createLuaScript();
         final Path luaOutput = FileUtils.createTempFile("loadtest4j-output", ".json");
 
-        final List<String> command = Arrays.asList(
+        final String[] command = {
                 "wrk",
-                "--connections", valueOf(connections),
+                "--connections", String.valueOf(connections),
                 "--duration", String.format("%ds", duration.getSeconds()),
                 "--script", luaScript.toString(),
-                "--threads", valueOf(threads),
+                "--threads", String.valueOf(threads),
                 url,
-                input.toString());
+                luaInput.toString()
+        };
 
         final ProcessBuilder pb = new ProcessBuilder(command).redirectInput(ProcessBuilder.Redirect.PIPE);
 
-        final Map<String, String> env = Collections.singletonMap("WRK_OUTPUT", luaOutput.toString());
-        pb.environment().putAll(env);
+        pb.environment().put("WRK_OUTPUT", luaOutput.toString());
 
         try {
             final Process process = pb.start();
@@ -99,6 +84,18 @@ class Wrk implements Driver {
         } catch (IOException | InterruptedException e) {
             throw new LoadTesterException(e);
         }
+    }
+
+    private static Path createLuaInput(List<DriverRequest> requests) {
+        final List<Req> wrkRequests = wrkRequests(requests);
+        final Input input = new Input(wrkRequests);
+        final Path inputPath = FileUtils.createTempFile("loadtest4j-wrk", ".json");
+        try {
+            Json.serialize(inputPath.toFile(), input);
+        } catch (IOException e) {
+            throw new LoadTesterException(e);
+        }
+        return inputPath;
     }
 
     private static DriverResult toDriverResult(Path path) throws IOException {
