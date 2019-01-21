@@ -54,13 +54,6 @@ public class WrkBuilderTest {
     }
 
     @Test
-    public void shouldSetExecutableToWrkByDefault() {
-        final Wrk wrk = builder.buildDriver();
-
-        assertThat(wrk.executable).isEqualTo("wrk");
-    }
-
-    @Test
     public void shouldSetThreads() {
         final Wrk wrk = builder
                 .withThreads(2)

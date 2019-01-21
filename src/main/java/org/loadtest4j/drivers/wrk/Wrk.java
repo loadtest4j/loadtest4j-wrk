@@ -9,16 +9,12 @@ import org.loadtest4j.drivers.wrk.dto.*;
 import org.loadtest4j.drivers.wrk.script.WrkBodyMatcher;
 import org.loadtest4j.drivers.wrk.script.WrkHeadersMatcher;
 import org.loadtest4j.drivers.wrk.utils.*;
-import org.loadtest4j.drivers.wrk.utils.Process;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.valueOf;
@@ -30,14 +26,12 @@ class Wrk implements Driver {
 
     final int connections;
     final Duration duration;
-    final String executable;
     final int threads;
     final String url;
 
-    Wrk(int connections, Duration duration, String executable, int threads, String url) {
+    Wrk(int connections, Duration duration, int threads, String url) {
         this.connections = connections;
         this.duration = duration;
-        this.executable = executable;
         this.threads = threads;
         this.url = url;
     }
@@ -73,38 +67,36 @@ class Wrk implements Driver {
         final Path luaScript = createLuaScript();
         final Path luaOutput = FileUtils.createTempFile("loadtest4j-output", ".json");
 
-        final List<String> arguments = new ArgumentBuilder()
-                .addNamedArgument("--connections", valueOf(connections))
-                .addNamedArgument("--duration", String.format("%ds", duration.getSeconds()))
-                .addNamedArgument("--script", luaScript.toString())
-                .addNamedArgument("--threads", valueOf(threads))
-                .addArgument(url)
-                .addArgument(input.toString())
-                .build();
+        final List<String> command = Arrays.asList(
+                "wrk",
+                "--connections", valueOf(connections),
+                "--duration", String.format("%ds", duration.getSeconds()),
+                "--script", luaScript.toString(),
+                "--threads", valueOf(threads),
+                url,
+                input.toString());
+
+        final ProcessBuilder pb = new ProcessBuilder(command).redirectInput(ProcessBuilder.Redirect.PIPE);
 
         final Map<String, String> env = Collections.singletonMap("WRK_OUTPUT", luaOutput.toString());
+        pb.environment().putAll(env);
 
-        final Command command = new Command(arguments, env, executable);
-
-        final Process process = new Shell().start(command);
-
-        // Reduce sleep/wakeup cycles waiting for process by doing the sleep ourselves
         try {
+            final Process process = pb.start();
+
+            // Reduce sleep/wakeup cycles waiting for process by doing the sleep ourselves
             Thread.sleep(duration.toMillis());
-        } catch (InterruptedException e) {
-            // It was worth a try - just fall back to process.waitFor()
-        }
 
-        final int exitStatus = process.waitFor();
+            final int exitStatus = process.waitFor();
 
-        if (exitStatus != 0) {
-            final String error = StreamReader.streamToString(process.getStderr());
-            throw new LoadTesterException("Wrk error:\n\n" + error);
-        }
+            if (exitStatus != 0) {
+                final String error = StreamReader.streamToString(process.getErrorStream());
+                throw new LoadTesterException("Wrk error:\n\n" + error);
+            }
 
-        try {
             return toDriverResult(luaOutput.toAbsolutePath());
-        } catch (IOException e) {
+
+        } catch (IOException | InterruptedException e) {
             throw new LoadTesterException(e);
         }
     }

@@ -35,6 +35,6 @@ public class WrkBuilder extends LoadTesterBuilder {
 
     @Override
     protected Wrk buildDriver() {
-        return new Wrk(connections, duration, "wrk", threads, url);
+        return new Wrk(connections, duration, threads, url);
     }
 }
